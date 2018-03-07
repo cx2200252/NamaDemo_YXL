@@ -19,3 +19,5 @@
 **/GeneratedFiles/*
 **/thirdparty*
 resources/*/*
+
+!screenshots/*
