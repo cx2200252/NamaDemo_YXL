@@ -274,6 +274,12 @@ NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 		_sourceBtnGroup->addButton(ui.radioButton_sourcePic);
 		_sourceBtnGroup->addButton(ui.radioButton_sourceVideo);
 	}
+	{
+		_paramUpdateBtnGroup = std::shared_ptr<QButtonGroup>(new QButtonGroup(this));
+		_paramUpdateBtnGroup->addButton(ui.radioButton_update_every_frame_none);
+		_paramUpdateBtnGroup->addButton(ui.radioButton_update_every_frame_read);
+		_paramUpdateBtnGroup->addButton(ui.radioButton_update_every_frame_write);
+	}
 
 	ui.openGLWidget->SetMainWnd(this);
 
@@ -281,6 +287,14 @@ NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 	ui.toolBox->setCurrentIndex(page);
 	bool is_check = g_config->Get("save_with_src_img", false);
 	ui.checkBox_saveWithSrcImg->setChecked(is_check);
+
+	{
+		QRadioButton* btns[] = { ui.radioButton_update_every_frame_none, ui.radioButton_update_every_frame_write, ui.radioButton_update_every_frame_read};
+		int update_every_frame_type = g_config->Get("update_every_frame_type", 0);
+		btns[update_every_frame_type]->setChecked(true);
+		ButtonClicked(btns[update_every_frame_type]);
+	}
+
 	//SetParamRelatedButtonState();
 
 	InitCtrls();
@@ -302,7 +316,11 @@ cv::Mat NamaDemo_YXL::GetNextFrame()
 
 	cv::Mat nama_out;
 	if (_nama)
+	{
+		if (_param_update_every_frame_func)
+			(this->*_param_update_every_frame_func)();
 		nama_out = _nama->Process(src);
+	}
 	else
 		return src;
 
@@ -912,81 +930,7 @@ void NamaDemo_YXL::SpinBoxChanged(int val)
 void NamaDemo_YXL::ButtonClicked()
 {
 	const auto obj = this->sender();
-
-	if (obj==ui.checkBox_nama_in_bgra)
-	{
-		auto tmp = ui.checkBox_nama_in_bgra->isChecked();
-		if (_nama)
-			_nama->SetBGRAIn(tmp);
-		g_config->Set("is_nama_in_bgra", tmp, true);
-	}
-	else if (obj == ui.checkBox_nama_out_bgra)
-	{
-		auto tmp = ui.checkBox_nama_out_bgra->isChecked();
-		if (_nama)
-			_nama->SetBGRAOut(tmp);
-		g_config->Set("is_nama_out_bgra", tmp, true);
-	}
-	else if (obj == ui.checkBox_nama_in_vertical)
-	{
-		auto tmp = ui.checkBox_nama_in_vertical->isChecked();
-		if (_nama)
-			_nama->SetVerticalIn(tmp);
-		g_config->Set("is_nama_in_vertical", tmp, true);
-	}
-	else if (obj == ui.checkBox_nama_out_vertical)
-	{
-		auto tmp = ui.checkBox_nama_out_vertical->isChecked();
-		if (_nama)
-			_nama->SetVerticalOut(tmp);
-		g_config->Set("is_nama_out_vertical", tmp, true);
-	}
-	else if (obj == ui.radioButton_sourceCam)
-	{
-		_source_type = SOURCE_TYPE_CAM;
-		g_config->Set("source", "camera", true);
-	}
-	else if (obj == ui.radioButton_sourcePic)
-	{
-		_source_type = SOURCE_TYPE_PIC;
-		g_config->Set("source", "picture", true);
-		_cap_cam = nullptr;
-	}
-	else if (obj == ui.radioButton_sourceVideo)
-	{
-		_source_type = SOURCE_TYPE_VIDEO;
-		g_config->Set("source", "video", true);
-		_cap_cam = nullptr;
-	}
-	else if (obj == ui.pushButton_selPic)
-	{
-		auto str = CmFile::BrowseFile();
-		UseSourcePicture(str);
-	}
-	else if (obj == ui.pushButton_selVideo)
-	{
-		auto str = CmFile::BrowseFile("Video (*.avi;*.mp4;*MOV)\0*.avi;*.mp4;*MOV\0All (*.*)\0*.*\0\0");
-		UseSourceVideo(str);
-	}
-	else if (obj == ui.pushButton_saveDir)
-	{
-		CmFile::RunProgram("explorer", YXL::ToWindowsPath(g_saveDir), false, false);
-	}
-	else if (obj == ui.pushButton_savePic_start)
-	{
-		_save_img_cur_idx = 0;
-		std::string time = YXL::GetCurTime();
-		_save_img_path_format = g_saveDir + time+"/%06d.png";
-		CmFile::MkDir(CmFile::GetFolder(_save_img_path_format));
-		ui.pushButton_savePic_start->setEnabled(false);
-		ui.pushButton_savePic_stop->setEnabled(true);
-	}
-	else if (obj == ui.pushButton_savePic_stop)
-	{
-		_save_img_path_format = "";
-		ui.pushButton_savePic_start->setEnabled(true);
-		ui.pushButton_savePic_stop->setEnabled(false);
-	}
+	ButtonClicked(obj);
 }
 
 void NamaDemo_YXL::ValueChanged(int val)
@@ -1079,6 +1023,100 @@ void NamaDemo_YXL::SaveParams()
 	g_config->Set<std::string>("cur_param_list", _cur_param_list);
 
 	g_config->Save();
+}
+
+void NamaDemo_YXL::ButtonClicked(QObject * obj)
+{
+	if (obj == ui.checkBox_nama_in_bgra)
+	{
+		auto tmp = ui.checkBox_nama_in_bgra->isChecked();
+		if (_nama)
+			_nama->SetBGRAIn(tmp);
+		g_config->Set("is_nama_in_bgra", tmp, true);
+	}
+	else if (obj == ui.checkBox_nama_out_bgra)
+	{
+		auto tmp = ui.checkBox_nama_out_bgra->isChecked();
+		if (_nama)
+			_nama->SetBGRAOut(tmp);
+		g_config->Set("is_nama_out_bgra", tmp, true);
+	}
+	else if (obj == ui.checkBox_nama_in_vertical)
+	{
+		auto tmp = ui.checkBox_nama_in_vertical->isChecked();
+		if (_nama)
+			_nama->SetVerticalIn(tmp);
+		g_config->Set("is_nama_in_vertical", tmp, true);
+	}
+	else if (obj == ui.checkBox_nama_out_vertical)
+	{
+		auto tmp = ui.checkBox_nama_out_vertical->isChecked();
+		if (_nama)
+			_nama->SetVerticalOut(tmp);
+		g_config->Set("is_nama_out_vertical", tmp, true);
+	}
+	else if (obj == ui.radioButton_sourceCam)
+	{
+		_source_type = SOURCE_TYPE_CAM;
+		g_config->Set("source", "camera", true);
+	}
+	else if (obj == ui.radioButton_sourcePic)
+	{
+		_source_type = SOURCE_TYPE_PIC;
+		g_config->Set("source", "picture", true);
+		_cap_cam = nullptr;
+	}
+	else if (obj == ui.radioButton_sourceVideo)
+	{
+		_source_type = SOURCE_TYPE_VIDEO;
+		g_config->Set("source", "video", true);
+		_cap_cam = nullptr;
+	}
+	else if (obj == ui.pushButton_selPic)
+	{
+		auto str = CmFile::BrowseFile();
+		UseSourcePicture(str);
+	}
+	else if (obj == ui.pushButton_selVideo)
+	{
+		auto str = CmFile::BrowseFile("Video (*.avi;*.mp4;*MOV)\0*.avi;*.mp4;*MOV\0All (*.*)\0*.*\0\0");
+		UseSourceVideo(str);
+	}
+	else if (obj == ui.pushButton_saveDir)
+	{
+		CmFile::RunProgram("explorer", YXL::ToWindowsPath(g_saveDir), false, false);
+	}
+	else if (obj == ui.pushButton_savePic_start)
+	{
+		_save_img_cur_idx = 0;
+		std::string time = YXL::GetCurTime();
+		_save_img_path_format = g_saveDir + time + "/%06d.png";
+		CmFile::MkDir(CmFile::GetFolder(_save_img_path_format));
+		ui.pushButton_savePic_start->setEnabled(false);
+		ui.pushButton_savePic_stop->setEnabled(true);
+	}
+	else if (obj == ui.pushButton_savePic_stop)
+	{
+		_save_img_path_format = "";
+		ui.pushButton_savePic_start->setEnabled(true);
+		ui.pushButton_savePic_stop->setEnabled(false);
+	}
+	else if (obj == ui.radioButton_update_every_frame_none)
+	{
+		g_config->Set("update_every_frame_type", 0, true);
+		_param_update_every_frame_func = nullptr;
+	}
+	else if (obj == ui.radioButton_update_every_frame_write)
+	{
+		g_config->Set("update_every_frame_type", 1, true);
+		_param_update_every_frame_func = &NamaDemo_YXL::SetAllParameter;
+	}
+
+	else if (obj == ui.radioButton_update_every_frame_read)
+	{
+		g_config->Set("update_every_frame_type", 2, true);
+		_param_update_every_frame_func = &NamaDemo_YXL::UpdateParamsFromProp;
+	}
 }
 
 void NamaDemo_YXL::SetCtrlData(QAbstractSlider * slider, int value)

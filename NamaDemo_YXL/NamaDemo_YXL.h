@@ -64,9 +64,14 @@ enum SOURCE_TYPE
 	SOURCE_TYPE_VIDEO
 };
 
+class NamaDemo_YXL;
+typedef void(NamaDemo_YXL::*ParamUpdateEveryFrameFunc)();
+
 class NamaDemo_YXL : public QWidget
 {
 	Q_OBJECT
+
+private:
 
 public:
 	NamaDemo_YXL(QWidget *parent = Q_NULLPTR);
@@ -121,6 +126,8 @@ private slots:
 private:
 	Ui::NamaDemo_YXLClass ui;
 
+	void ButtonClicked(QObject* sender);
+
 	void SetCtrlData(QAbstractSlider * slider, int value);
 	void SetCtrlData(QRadioButton * btn, bool isCheck);
 	void SetCtrlData(QCheckBox * btn, bool isCheck);
@@ -143,9 +150,11 @@ private:
 	cv::Mat _pic;
 	std::string _path_video = "";
 	std::shared_ptr<cv::VideoCapture> _cap_video = nullptr;
+	ParamUpdateEveryFrameFunc _param_update_every_frame_func = nullptr;
 
 private:
-	std::shared_ptr<QButtonGroup> _sourceBtnGroup=nullptr;
+	std::shared_ptr<QButtonGroup> _sourceBtnGroup = nullptr;
+	std::shared_ptr<QButtonGroup> _paramUpdateBtnGroup=nullptr;
 
 private:
 	std::string _save_img_path_format;
