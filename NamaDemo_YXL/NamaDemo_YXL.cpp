@@ -433,8 +433,8 @@ cv::Mat NamaDemo_YXL::GetSaveImage(cv::Mat src, cv::Mat nama_out)
 		cv::Mat img0, img1;
 		cv::resize(nama_out, img0, s0);
 		cv::resize(src, img1, s1);
-		img0.copyTo(res.colRange(0, img0.cols));
-		img1.copyTo(res.colRange(img0.cols, img0.cols+img1.cols));
+		img1.copyTo(res.colRange(0, img0.cols));
+		img0.copyTo(res.colRange(img0.cols, img0.cols+img1.cols));
 		return res;
 	}
 	else
@@ -627,22 +627,26 @@ void NamaDemo_YXL::InitFromConfig()
 
 void NamaDemo_YXL::LoadProps()
 {
+	CStr propDir = g_resDir;
 	vecS dirs;
-	CmFile::GetSubFolders(g_resDir, dirs);
+	CmFile::GetSubFolders(propDir, dirs);
 	for (auto dir : dirs)
 	{
+		vecS names, tmp;
+		for (auto postfix : g_prop_postfixs)
+		{
+			CmFile::GetNames(propDir + dir + "/" + postfix, tmp);
+			for (auto a : tmp)
+				names.push_back(propDir + dir + "/" + a);
+		}
+		if (names.empty())
+			continue;
+
 		auto* parent_item = new QTreeWidgetItem(ui.treeWidget_props);
 		parent_item->setText(0, StdStr2QStr(dir));
 		//parent_item->setData(1, Qt::ItemDataRole::UserRole, QVariant(0));
 		//parent_item->setText(0, _train_results[i].show_title);
-
-		vecS names, tmp;
-		for (auto postfix : g_prop_postfixs)
-		{
-			CmFile::GetNames(g_resDir + dir + "/"+ postfix, tmp);
-			for (auto a : tmp)
-				names.push_back(g_resDir + dir + "/" + a);
-		}
+		
 		std::sort(names.begin(), names.end(), [](const std::string& a, const std::string& b) {
 			auto aa = YXL::GetFileInfo(a, YXL::FileInfo_LastWriteTime);
 			auto bb = YXL::GetFileInfo(b, YXL::FileInfo_LastWriteTime);
