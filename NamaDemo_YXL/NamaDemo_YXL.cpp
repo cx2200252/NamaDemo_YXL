@@ -28,145 +28,346 @@ std::string g_resDir = "../resources/";
 CStr g_saveDir = "./saved/";
 const cv::Size g_video_size(1280, 720);
 
+QString StdStr2QStr(std::string str)
+{
+	return QString::fromLocal8Bit(str.c_str());
+}
 
+std::string QStr2StdStr(QString str)
+{
+	return (std::string)str.toLocal8Bit();
+}
+
+void ParamItemBase::InitCtrl(NamaDemo_YXL * wnd)
+{
+	_layout = new QHBoxLayout();
+
+	_spin_box = new QSpinBox();
+	_spin_box->setToolTip(QString::fromLocal8Bit("目标道具"));
+	_spin_box->setSingleStep(1);
+	_spin_box->setRange(0, 0);
+	_spin_box->setValue(0);
+	_spin_box->setMaximumWidth(50);
+	_layout->addWidget(_spin_box);
+	QObject::connect(_spin_box, SIGNAL(valueChanged(int)), wnd, SLOT(SpinBoxChanged(int)));
+}
+
+struct ParamItemCheckbox :public ParamItemBase
+{
+public:
+	ParamItemCheckbox() :ParamItemBase(TYPE_CHECKBOX) {}
+
+	static bool IsType(const rapidjson::Value & val)
+	{
+		return ParamItemBase::IsType(val) && "checkbox" == JsonGetStr(val["type"]) && val.HasMember("val") && val["val"].IsBool();
+	}
+	virtual void LoadFromJson(const rapidjson::Value & val)
+	{
+		ParamItemBase::LoadFromJson(val);
+		_val = JsonGetBool(val["val"]);
+	}
+	virtual void SaveToJson(rapidjson::Value & val, rapidjson::Document& doc)
+	{
+		auto& alloc = doc.GetAllocator();
+		val.AddMember(JsonParseStr("type", doc), JsonParseStr("checkbox", doc), alloc);
+		ParamItemBase::SaveToJson(val, doc);
+		val.AddMember(JsonParseStr("val", doc), _val, alloc);
+	}
+	virtual void InitCtrl(NamaDemo_YXL* wnd)
+	{
+		ParamItemBase::InitCtrl(wnd);
+
+		_check_box = new QCheckBox(StdStr2QStr(_show_name));
+		_check_box->setChecked(_val);
+
+		QObject::connect(_check_box, SIGNAL(clicked()), wnd, SLOT(CheckBoxClick()));
+		_layout->addWidget(_check_box);
+		_layout->addStretch();
+
+		if (_tooltip != "")
+			_check_box->setToolTip(StdStr2QStr(_tooltip));
+	}
+
+	virtual void UpdateCtrlValue()
+	{
+		ParamItemBase::UpdateCtrlValue();
+		SetCtrlData(_check_box, _val);
+	}
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	{
+		double val = 0.0;
+		if (propsUsed.size()>_prop_idx)
+			val = nama->GetPropParameterD(propsUsed[_prop_idx], _param);
+		_val = val >0.0;
+	}
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	{
+		if (sender != _check_box)
+			return false;
+		_val = _check_box->isChecked();
+		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
+			nama->SetPropParameter(propsUsed[_prop_idx], _param, _val ? 1.0 : 0.0);
+		return true;
+	}
+	virtual QObject* GetCtrl()
+	{
+		return _check_box;
+	}
+
+protected:
+	bool _val = false;
+
+protected:
+	QCheckBox* _check_box = nullptr;
+};
+
+struct ParamItemSlider :public ParamItemBase
+{
+public:
+	ParamItemSlider() :ParamItemBase(TYPE_SLIDER) {}
+
+	static bool IsType(const rapidjson::Value & val)
+	{
+		return ParamItemBase::IsType(val) && "slider" == JsonGetStr(val["type"]) && val.HasMember("val") && val["val"].IsInt() && val.HasMember("scale") && val["scale"].IsFloat() && val.HasMember("range") && val["range"].IsArray()&& val["range"].Size()==2;
+	}
+	virtual void LoadFromJson(const rapidjson::Value & val)
+	{
+		ParamItemBase::LoadFromJson(val);
+		_val = JsonGetInt(val["val"]);
+		_scale = JsonGetFloat(val["scale"]);
+		auto tmp = JsonGetIntVec(val["range"]);
+		_range = std::make_pair(tmp[0], tmp[1]);
+	}
+	virtual void SaveToJson(rapidjson::Value & val, rapidjson::Document& doc)
+	{
+		auto& alloc = doc.GetAllocator();
+		val.AddMember(JsonParseStr("type", doc), JsonParseStr("slider", doc), alloc);
+		ParamItemBase::SaveToJson(val, doc);
+		val.AddMember(JsonParseStr("val", doc), _val, alloc);
+		val.AddMember(JsonParseStr("val", doc), _scale, alloc);
+		std::vector<int> tmp({ _range.first, _range.second });
+		val.AddMember(JsonParseStr("range", doc), JsonParseIntVec(tmp, doc), alloc);
+	}
+
+	virtual void InitCtrl(NamaDemo_YXL* wnd)
+	{
+		ParamItemBase::InitCtrl(wnd);
+
+		_label_name = new QLabel(StdStr2QStr(_show_name));
+		_layout->addWidget(_label_name);
+
+		_slider = new QSlider();
+		_slider->setRange(_range.first, _range.second);
+		_slider->setValue(0);
+		_slider->setOrientation(Qt::Orientation::Horizontal);
+		_slider->setMinimumHeight(15);
+		QObject::connect(_slider, SIGNAL(valueChanged(int)), wnd, SLOT(SliderChanged(int)));
+		_layout->addWidget(_slider);
+
+		_label = new QLabel();
+		_label->setText(StdStr2QStr("0"));
+		_label->setMinimumWidth(30);
+		_label->setMaximumWidth(30);
+		_label->setAlignment(Qt::AlignRight);
+		_layout->addWidget(_label);
+
+		if (_tooltip != "")
+		{
+			_slider->setToolTip(StdStr2QStr(_tooltip));
+			_label->setToolTip(StdStr2QStr(_tooltip));
+		}
+	}
+
+	virtual void UpdateCtrlValue()
+	{
+		ParamItemBase::UpdateCtrlValue();
+		SetCtrlData(_slider, _val);
+	}
+
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	{
+		double val = 0.0;
+		if (propsUsed.size()>_prop_idx)
+			val = nama->GetPropParameterD(propsUsed[_prop_idx], _param);
+		_val = val / _scale;
+	}
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	{
+		if (sender != _slider)
+			return false;
+		_val = _slider->value();
+		auto tmp = _val*_scale;
+		_label->setText(QString::number(tmp));
+		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
+			nama->SetPropParameter(propsUsed[_prop_idx], _param, tmp);
+		return true;
+	}
+	virtual QObject* GetCtrl()
+	{
+		return _slider;
+	}
+
+protected:
+	int _val = 0;
+	std::pair<int, int> _range;
+	float _scale = 0.0f;
+
+
+protected:
+	QSlider* _slider = nullptr;
+	QLabel* _label_name = nullptr;
+	QLabel* _label = nullptr;
+};
+
+struct ParamItemComboBox :public ParamItemBase
+{
+public:
+	ParamItemComboBox() :ParamItemBase(TYPE_COMBOBOX) {}
+
+	static bool IsType(const rapidjson::Value & val)
+	{
+		return ParamItemBase::IsType(val) && "combobox" == JsonGetStr(val["type"]) && val.HasMember("val") && val["val"].IsString() && val.HasMember("combo_texts") && val["combo_texts"].IsArray();
+	}
+	virtual void LoadFromJson(const rapidjson::Value & val)
+	{
+		ParamItemBase::LoadFromJson(val);
+		_val = JsonGetStr(val["val"]);
+		_combo_texts = JsonGetStrVec(val["combo_texts"]);
+	}
+	virtual void SaveToJson(rapidjson::Value & val, rapidjson::Document& doc)
+	{
+		auto& alloc = doc.GetAllocator();
+		val.AddMember(JsonParseStr("type", doc), JsonParseStr("combobox", doc), alloc);
+		ParamItemBase::SaveToJson(val, doc);
+		val.AddMember(JsonParseStr("val", doc), JsonParseStr(_val, doc), alloc);
+		val.AddMember(JsonParseStr("val", doc), JsonParseVecStr(_combo_texts, doc), alloc);
+	}
+
+	virtual void InitCtrl(NamaDemo_YXL* wnd)
+	{
+		ParamItemBase::InitCtrl(wnd);
+
+		_label_name = new QLabel(StdStr2QStr(_show_name));
+		_layout->addWidget(_label_name);
+
+		_combobox = new QComboBox();
+		QObject::connect(_combobox, SIGNAL(currentTextChanged(QString)), wnd, SLOT(CurrentTextChanged(QString)));
+		QStringList sl;
+		auto backup_str = _val;
+		for (auto& txt : _combo_texts)
+			sl << StdStr2QStr(txt);
+		_combobox->addItems(sl);
+		_combobox->setCurrentText(StdStr2QStr(backup_str));
+		_layout->addWidget(_combobox);
+		_layout->addStretch();
+
+		if (_tooltip != "")
+			_combobox->setToolTip(StdStr2QStr(_tooltip));
+	}
+
+	virtual void UpdateCtrlValue()
+	{
+		ParamItemBase::UpdateCtrlValue();
+		SetCtrlData(_combobox, _val);
+	}
+
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	{
+		std::string str = "";
+		if (propsUsed.size()>_prop_idx)
+			str = nama->GetPropParameterStr(propsUsed[_prop_idx], _param);
+		if ("" != str)
+			_val = str;
+	}
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	{
+		if (sender != _combobox)
+			return false;
+		_val = QStr2StdStr(_combobox->currentText());
+		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
+			nama->SetPropParameter(propsUsed[_prop_idx], _param, _val);
+		return true;
+	}
+
+	virtual QObject* GetCtrl()
+	{
+		return _combobox;
+	}
+protected:
+	std::string _val;
+	std::vector<std::string> _combo_texts;
+
+protected:
+	QComboBox* _combobox = nullptr;
+	QLabel* _label_name = nullptr;
+};
 
 namespace YXL
 {
 	namespace JSON
 	{
 		template<>
-		struct ValueGetter<ParamItem> {
-			static ParamItem Get(const rapidjson::Value & val) {
-				ParamItem param;
-				param.type = GetType(val);
-				if (ParamItem::TYPE_NONE == param.type)
-					return ParamItem();
-				param.prop_idx = val["prop_idx"].GetInt();
-				param.param = ValueGetter<std::string>::Get(val["param"]);
-				param.show_name = ValueGetter<std::string>::Get(val["show_name"]);
-				if(val.HasMember("tooltip"))
-					param.tooltip = ValueGetter<std::string>::Get(val["tooltip"]);
-
-				switch (param.type)
+		struct ValueGetter<std::shared_ptr<ParamItemBase> > {
+			static std::shared_ptr<ParamItemBase> Get(const rapidjson::Value & val) {
+				std::shared_ptr<ParamItemBase> ret = nullptr;
+				auto type = GetType(val);
+				switch (type)
 				{
-				case ParamItem::TYPE_CHECKBOX:
-					param.valB = val["val"].GetBool();
+				case ParamItemBase::TYPE_CHECKBOX:
+					ret = std::shared_ptr<ParamItemBase>(new ParamItemCheckbox);
 					break;
-				case ParamItem::TYPE_SLIDER:
-				{
-					param.valI = val["val"].GetInt();
-					if (false == val["range"].IsArray() || val["range"].Size()!= 2)
-						return ParamItem();
-					auto iter = val["range"].Begin();
-					int a = iter->GetInt();
-					++iter;
-					int b = iter->GetInt();
-					param.range = std::make_pair(a, b);
-					param.scale = val["scale"].GetFloat();
-				}
+				case ParamItemBase::TYPE_SLIDER:
+					ret = std::shared_ptr<ParamItemBase>(new ParamItemSlider);
 					break;
-				case ParamItem::TYPE_COMBOBOX:
-				{
-					param.valStr = ValueGetter<std::string>::Get(val["val"]);
-					for (auto iter = val["combo_texts"].Begin(); iter != val["combo_texts"].End(); ++iter)
-						param.combo_texts.push_back(ValueGetter<std::string>::Get(*iter));
-				}
+				case ParamItemBase::TYPE_COMBOBOX:
+					ret = std::shared_ptr<ParamItemBase>(new ParamItemComboBox);
 					break;
 				default:
 					break;
 				}
-
-				return param;
+				if (ret)
+					ret->LoadFromJson(val);
+				return ret;
 			}
 			static bool IsType(const rapidjson::Value & val)
 			{
-				return val.IsObject() && ParamItem::TYPE_NONE!= GetType(val) && val.HasMember("param") && val["param"].IsString() && val.HasMember("prop_idx") && val["prop_idx"].IsInt();
+				auto type = GetType(val);
+				switch (type)
+				{
+				case ParamItemBase::TYPE_CHECKBOX:
+					return ParamItemCheckbox::IsType(val);
+				case ParamItemBase::TYPE_SLIDER:
+					return ParamItemSlider::IsType(val);
+				case ParamItemBase::TYPE_COMBOBOX:
+					return ParamItemComboBox::IsType(val);
+				default:
+					break;
+				}
+				return false;
 			}
-			static ParamItem::TYPE GetType(const rapidjson::Value & val)
+			static ParamItemBase::TYPE GetType(const rapidjson::Value & val)
 			{
 				if (val.HasMember("type") && val["type"].IsString())
 				{
 					std::string name = ValueGetter<std::string>::Get(val["type"]);
 					if ("checkbox" == name)
-						return ParamItem::TYPE_CHECKBOX;
+						return ParamItemBase::TYPE_CHECKBOX;
 					else if ("slider" == name)
-						return ParamItem::TYPE_SLIDER;
+						return ParamItemBase::TYPE_SLIDER;
 					else if ("combobox" == name)
-						return ParamItem::TYPE_COMBOBOX;
+						return ParamItemBase::TYPE_COMBOBOX;
 				}
-				return ParamItem::TYPE_NONE;
+				return ParamItemBase::TYPE_NONE;
 			}
 		};
 
 		template<>
-		struct ValueParser<ParamItem> {
-			static rapidjson::Value Parse(const ParamItem& val, rapidjson::Document& doc) {
+		struct ValueParser<std::shared_ptr<ParamItemBase> > {
+			static rapidjson::Value Parse(const std::shared_ptr<ParamItemBase>& val, rapidjson::Document& doc) {
 				rapidjson::Value v(rapidjson::Type::kObjectType);
-				ValueParser<std::string> str_parser;
-				
-				rapidjson::Value name, value;
-				name = str_parser.Parse("type", doc);
-				value = str_parser.Parse(ToTypeStr(val.type), doc);
-				v.AddMember(name, value, doc.GetAllocator());
-
-				name = str_parser.Parse("show_name", doc);
-				value = str_parser.Parse(val.show_name, doc);
-				v.AddMember(name, value, doc.GetAllocator());
-
-				name = str_parser.Parse("tooltip", doc);
-				value = str_parser.Parse(val.tooltip, doc);
-				v.AddMember(name, value, doc.GetAllocator());
-
-				name = str_parser.Parse("param", doc);
-				value = str_parser.Parse(val.param, doc);
-				v.AddMember(name, value, doc.GetAllocator());
-
-				name = str_parser.Parse("prop_idx", doc);
-				v.AddMember(name, val.prop_idx, doc.GetAllocator());
-
-				name = str_parser.Parse("val", doc);
-				switch (val.type)
-				{
-				case ParamItem::TYPE_CHECKBOX:
-				{
-					v.AddMember(name, val.valB, doc.GetAllocator());
-				}
-					break;
-				case ParamItem::TYPE_SLIDER:
-				{
-					v.AddMember(name, val.valI, doc.GetAllocator());
-
-					name = str_parser.Parse("scale", doc);
-					v.AddMember(name, val.scale, doc.GetAllocator());
-
-					name = str_parser.Parse("range", doc);
-					value = rapidjson::Value(rapidjson::Type::kArrayType);
-					value.PushBack(val.range.first, doc.GetAllocator());
-					value.PushBack(val.range.second, doc.GetAllocator());
-					v.AddMember(name, value, doc.GetAllocator());
-				}
-					break;
-				case ParamItem::TYPE_COMBOBOX:
-				{
-					value = str_parser.Parse(val.valStr, doc);
-					v.AddMember(name, value, doc.GetAllocator());
-
-					name = str_parser.Parse("combo_texts", doc);
-					value = rapidjson::Value(rapidjson::Type::kArrayType);
-					for (auto& txt : val.combo_texts)
-						value.PushBack(str_parser.Parse(txt, doc), doc.GetAllocator());
-					v.AddMember(name, value, doc.GetAllocator());
-				}
-					break;
-				}
-
+				CV_Assert(val != nullptr);
+				val->SaveToJson(v, doc);
 				return v;
-			}
-
-			static std::string ToTypeStr(ParamItem::TYPE type)
-			{
-				std::string typeStr[] = {"checkbox", "slider", "combobox", "none"};
-				return typeStr[type];
 			}
 		};
 	}
@@ -212,7 +413,7 @@ public:
 				std::string name = iter->name.GetString();
 				if (iter->value.IsArray())
 				{
-					std::vector<ParamItem> params;
+					std::vector<std::shared_ptr<ParamItemBase> > params;
 					_json_ctrl->ReadValue(params, name, root["params"]);
 					param_lists[name].params = params;
 				}
@@ -246,15 +447,7 @@ private:
 };
 std::shared_ptr<Config> g_config(new Config);
 
-QString StdStr2QStr(std::string str)
-{
-	return QString::fromLocal8Bit(str.c_str());
-}
 
-std::string QStr2StdStr(QString str)
-{
-	return (std::string)str.toLocal8Bit();
-}
 
 NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 	: QWidget(parent)
@@ -481,81 +674,8 @@ void NamaDemo_YXL::InitCtrls()
 			bool is_show = (param.first == _cur_param_list);
 			for (auto& item : param.second.params)
 			{
-				item.layout = new QHBoxLayout();
-
-				item.spin_box = new QSpinBox();
-				item.spin_box->setToolTip(StdStr2QStr("目标道具"));
-				item.spin_box->setSingleStep(1);
-				item.spin_box->setRange(0, 0);
-				item.spin_box->setValue(0);
-				item.spin_box->setMaximumWidth(50);
-				item.layout->addWidget(item.spin_box);
-				connect(item.spin_box, SIGNAL(valueChanged(int)), SLOT(SpinBoxChanged(int)));
-
-				switch (item.type)
-				{
-				case ParamItem::TYPE_CHECKBOX:
-				{
-					item.check_box = new QCheckBox(StdStr2QStr(item.show_name));
-					item.check_box->setChecked(item.valB);
-					item.check_box->setObjectName(StdStr2QStr(param.first+"_"+item.param));
-
-					connect(item.check_box, SIGNAL(clicked()), SLOT(CheckBoxClick()));
-					item.layout->addWidget(item.check_box);
-					item.layout->addStretch();
-
-				}
-					break;
-				case ParamItem::TYPE_SLIDER:
-				{
-					item.label_name = new QLabel(StdStr2QStr(item.show_name));
-					item.layout->addWidget(item.label_name);
-
-					item.slider = new QSlider();
-					item.slider->setRange(item.range.first, item.range.second);
-					item.slider->setValue(0);
-					item.slider->setOrientation(Qt::Orientation::Horizontal);
-					item.slider->setMinimumHeight(15);
-					item.slider->setObjectName(StdStr2QStr(param.first + "_" + item.param));
-					connect(item.slider, SIGNAL(valueChanged(int)), SLOT(SliderChanged(int)));
-					item.layout->addWidget(item.slider);
-
-					item.label = new QLabel();
-					item.label->setText(StdStr2QStr("0"));
-					item.label->setMinimumWidth(30);
-					item.label->setMaximumWidth(30);
-					item.label->setAlignment(Qt::AlignRight);
-					item.layout->addWidget(item.label);
-				}
-					break;
-				case ParamItem::TYPE_COMBOBOX:
-				{
-					item.label_name = new QLabel(StdStr2QStr(item.show_name));
-					item.layout->addWidget(item.label_name);
-
-					item.combobox = new QComboBox();
-					connect(item.combobox, SIGNAL(currentTextChanged(QString)), this, SLOT(CurrentTextChanged(QString)));
-					QStringList sl;
-					auto backup_str = item.valStr;
-					for (auto& txt : item.combo_texts)
-						sl << StdStr2QStr(txt);
-					item.combobox->addItems(sl);
-					item.combobox->setCurrentText(StdStr2QStr(backup_str));
-					item.layout->addWidget(item.combobox);
-					item.layout->addStretch();
-				}
-					break;
-				}
-				layout->addRow(StdStr2QStr(""), item.layout);
-
-				if (item.tooltip != "")
-				{
-					QString txt = StdStr2QStr(item.tooltip);
-					QWidget* ctrls[] = { item.check_box, item.slider, item.label, item.combobox };
-					for (auto ctrl : ctrls)
-						if(ctrl!=nullptr)
-							ctrl->setToolTip(txt);
-				}
+				item->InitCtrl(this);
+				layout->addRow(StdStr2QStr(""), item->GetLayout());
 			}
 
 			param.second.container = new QScrollArea();
@@ -724,7 +844,7 @@ void NamaDemo_YXL::UpdateSpinBoxRange()
 	int tmp = _propsUsed.empty() ? 0 : _propsUsed.size() - 1;
 	for (auto& params : _param_lists)
 		for (auto& item : params.second.params)
-			item.spin_box->setMaximum(tmp);
+			item->SetSpinBoxRange(0, tmp);
 }
 
 void NamaDemo_YXL::UpdatePropsUsed()
@@ -744,15 +864,7 @@ void NamaDemo_YXL::UpdateCtrlValue()
 {
 	auto& param = _param_lists[_cur_param_list];
 	for (auto& item : param.params)
-	{
-		item.spin_box->setValue(item.prop_idx);
-		if (item.slider)
-			SetCtrlData(item.slider, item.valI);
-		if (item.check_box)
-			SetCtrlData(item.check_box, item.valB);
-		if (item.combobox)
-			SetCtrlData(item.combobox, item.valStr);
-	}
+		item->UpdateCtrlValue();
 }
 
 void NamaDemo_YXL::UseSourcePicture(CStr & path)
@@ -836,35 +948,9 @@ void NamaDemo_YXL::UpdateParamsFromProp()
 	if (!_nama)
 		return;
 
-	for(auto& param:_param_lists)
-		for (auto& item : param.second.params)
-		{
-			if (item.type == ParamItem::TYPE_COMBOBOX)
-			{
-				std::string str = "";
-				if (_propsUsed.size()>item.prop_idx)
-					str = _nama->GetPropParameterStr(_propsUsed[item.prop_idx], item.param);
-				if ("" != str)
-					item.valStr = str;
-			}
-			else
-			{
-				double val = 0.0;
-				if (_propsUsed.size()>item.prop_idx)
-					val = _nama->GetPropParameterD(
-						_propsUsed[item.prop_idx],
-						item.param);
-				switch (item.type)
-				{
-				case ParamItem::TYPE_CHECKBOX:
-					item.valB = val > 0.0;
-					break;
-				case ParamItem::TYPE_SLIDER:
-					item.valI = val / item.scale;
-					break;
-				}
-			}
-		}
+	auto& param = _param_lists[_cur_param_list];
+	for (auto& item : param.params)
+		item->SetCtrlValue(_nama, _propsUsed);
 	UpdateCtrlValue();
 	SaveParams();
 }
@@ -872,22 +958,14 @@ void NamaDemo_YXL::UpdateParamsFromProp()
 void NamaDemo_YXL::CheckBoxClick()
 {
 	auto obj = sender();
-
 	for(auto& param:_param_lists)
 		for (auto& item : param.second.params)
-		{
-			if (obj == item.check_box)
+			if (item->SetPropValue(_nama, _propsUsed, obj))
 			{
-				item.valB = item.check_box->isChecked();
-
-				if (_nama && item.prop_idx >= 0 && item.prop_idx < _propsUsed.size())
-					_nama->SetPropParameter(_propsUsed[item.prop_idx], item.param, 
-						item.valB ? 1.0 : 0.0);
 				if (false == _is_param_batch_update)
 					SaveParams();
 				return;
 			}
-		}
 }
 
 void NamaDemo_YXL::SliderChanged(int val)
@@ -896,35 +974,25 @@ void NamaDemo_YXL::SliderChanged(int val)
 
 	for (auto& param : _param_lists)
 		for (auto& item : param.second.params)
-		{
-			if (obj == item.slider)
+			if (item->SetPropValue(_nama, _propsUsed, obj))
 			{
-				item.valI = item.slider->value();
-				auto tmp = item.valI*item.scale;
-				item.label->setText(QString::number(tmp));
-				if (_nama && item.prop_idx >= 0 && item.prop_idx < _propsUsed.size())
-					_nama->SetPropParameter(_propsUsed[item.prop_idx], item.param, tmp);
 				if (false == _is_param_batch_update)
 					SaveParams();
 				return;
 			}
-		}
 }
 
 void NamaDemo_YXL::SpinBoxChanged(int val)
 {
 	auto obj = this->sender();
-
 	for (auto& param : _param_lists)
 		for (auto& item : param.second.params)
-		{
-			if (obj == item.spin_box)
+			if (item->SpinBoxChanged(reinterpret_cast<QSpinBox*>(obj)))
 			{
-				item.prop_idx = item.spin_box->value();
 				if (false == _is_param_batch_update)
 					SaveParams();
+				return;
 			}
-		}
 }
 
 void NamaDemo_YXL::ButtonClicked()
@@ -988,11 +1056,8 @@ void NamaDemo_YXL::CurrentTextChanged(QString str)
 
 	for (auto& param : _param_lists)
 		for (auto& item : param.second.params)
-			if (obj == item.combobox)
+			if (item->SetPropValue(_nama, _propsUsed, obj))
 			{
-				item.valStr = QStr2StdStr(item.combobox->currentText());
-				if (_nama && item.prop_idx >= 0 && item.prop_idx < _propsUsed.size())
-					_nama->SetPropParameter(_propsUsed[item.prop_idx], item.param, item.valStr);
 				if (false == _is_param_batch_update)
 					SaveParams();
 				return;
@@ -1154,3 +1219,5 @@ void NamaDemo_YXL::SetCtrlData(QComboBox * comboBox, CStr & txt)
 {
 	comboBox->setCurrentText(StdStr2QStr(txt));
 }
+
+
