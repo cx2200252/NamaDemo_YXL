@@ -41,6 +41,7 @@ std::string QStr2StdStr(QString str)
 void ParamItemBase::InitCtrl(NamaDemo_YXL * wnd)
 {
 	_layout = new QHBoxLayout();
+	_v_layout = new QVBoxLayout();
 
 	_spin_box = new QSpinBox();
 	_spin_box->setToolTip(QString::fromLocal8Bit("目标道具"));
@@ -48,7 +49,9 @@ void ParamItemBase::InitCtrl(NamaDemo_YXL * wnd)
 	_spin_box->setRange(0, 0);
 	_spin_box->setValue(0);
 	_spin_box->setMaximumWidth(50);
-	_layout->addWidget(_spin_box);
+	_v_layout->addWidget(_spin_box);
+	_v_layout->addStretch();
+	_layout->addLayout(_v_layout);
 	QObject::connect(_spin_box, SIGNAL(valueChanged(int)), wnd, SLOT(SpinBoxChanged(int)));
 }
 
@@ -59,7 +62,7 @@ public:
 
 	static bool IsType(const rapidjson::Value & val)
 	{
-		return ParamItemBase::IsType(val) && "checkbox" == JsonGetStr(val["type"]) && val.HasMember("val") && val["val"].IsBool();
+		return ParamItemBase::IsType(val) && "checkbox" == JsonGetStr(val["type"]) && JsonValHasMemberAndIsBool(val, "val");
 	}
 	virtual void LoadFromJson(const rapidjson::Value & val)
 	{
@@ -109,10 +112,6 @@ public:
 			nama->SetPropParameter(propsUsed[_prop_idx], _param, _val ? 1.0 : 0.0);
 		return true;
 	}
-	virtual QObject* GetCtrl()
-	{
-		return _check_box;
-	}
 
 protected:
 	bool _val = false;
@@ -128,7 +127,10 @@ public:
 
 	static bool IsType(const rapidjson::Value & val)
 	{
-		return ParamItemBase::IsType(val) && "slider" == JsonGetStr(val["type"]) && val.HasMember("val") && val["val"].IsInt() && val.HasMember("scale") && val["scale"].IsFloat() && val.HasMember("range") && val["range"].IsArray()&& val["range"].Size()==2;
+		return ParamItemBase::IsType(val) && "slider" == JsonGetStr(val["type"]) 
+			&& JsonValHasMemberAndIsInt(val, "val") 
+			&& JsonValHasMemberAndIsFloat(val, "scale") 
+			&& JsonValHasMemberAndIsIntVec(val, "range") && val["range"].Size()==2;
 	}
 	virtual void LoadFromJson(const rapidjson::Value & val)
 	{
@@ -144,7 +146,7 @@ public:
 		val.AddMember(JsonParseStr("type", doc), JsonParseStr("slider", doc), alloc);
 		ParamItemBase::SaveToJson(val, doc);
 		val.AddMember(JsonParseStr("val", doc), _val, alloc);
-		val.AddMember(JsonParseStr("val", doc), _scale, alloc);
+		val.AddMember(JsonParseStr("scale", doc), _scale, alloc);
 		std::vector<int> tmp({ _range.first, _range.second });
 		val.AddMember(JsonParseStr("range", doc), JsonParseIntVec(tmp, doc), alloc);
 	}
@@ -177,13 +179,11 @@ public:
 			_label->setToolTip(StdStr2QStr(_tooltip));
 		}
 	}
-
 	virtual void UpdateCtrlValue()
 	{
 		ParamItemBase::UpdateCtrlValue();
 		SetCtrlData(_slider, _val);
 	}
-
 	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
 	{
 		double val = 0.0;
@@ -201,10 +201,6 @@ public:
 		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
 			nama->SetPropParameter(propsUsed[_prop_idx], _param, tmp);
 		return true;
-	}
-	virtual QObject* GetCtrl()
-	{
-		return _slider;
 	}
 
 protected:
@@ -226,7 +222,9 @@ public:
 
 	static bool IsType(const rapidjson::Value & val)
 	{
-		return ParamItemBase::IsType(val) && "combobox" == JsonGetStr(val["type"]) && val.HasMember("val") && val["val"].IsString() && val.HasMember("combo_texts") && val["combo_texts"].IsArray();
+		return ParamItemBase::IsType(val) && "combobox" == JsonGetStr(val["type"]) 
+			&& JsonValHasMemberAndIsStr(val, "val") 
+			&& JsonValHasMemberAndIsStrVec(val, "combo_texts");
 	}
 	virtual void LoadFromJson(const rapidjson::Value & val)
 	{
@@ -240,7 +238,7 @@ public:
 		val.AddMember(JsonParseStr("type", doc), JsonParseStr("combobox", doc), alloc);
 		ParamItemBase::SaveToJson(val, doc);
 		val.AddMember(JsonParseStr("val", doc), JsonParseStr(_val, doc), alloc);
-		val.AddMember(JsonParseStr("val", doc), JsonParseVecStr(_combo_texts, doc), alloc);
+		val.AddMember(JsonParseStr("combo_texts", doc), JsonParseVecStr(_combo_texts, doc), alloc);
 	}
 
 	virtual void InitCtrl(NamaDemo_YXL* wnd)
@@ -288,11 +286,6 @@ public:
 			nama->SetPropParameter(propsUsed[_prop_idx], _param, _val);
 		return true;
 	}
-
-	virtual QObject* GetCtrl()
-	{
-		return _combobox;
-	}
 protected:
 	std::string _val;
 	std::vector<std::string> _combo_texts;
@@ -300,6 +293,147 @@ protected:
 protected:
 	QComboBox* _combobox = nullptr;
 	QLabel* _label_name = nullptr;
+};
+
+struct ParamItemSliderList :public ParamItemBase
+{
+public:
+	ParamItemSliderList() :ParamItemBase(TYPE_SLIDER_LIST) {}
+
+	static bool IsType(const rapidjson::Value & val)
+	{
+		return ParamItemBase::IsType(val) && "slider_list" == JsonGetStr(val["type"]) 
+			&& JsonValHasMemberAndIsIntVec(val, "vals")
+			&& JsonValHasMemberAndIsIntVec(val, "min")
+			&& JsonValHasMemberAndIsIntVec(val, "max")
+			&& JsonValHasMemberAndIsFloatVec(val, "scales")
+			&& JsonValHasMemberAndIsStrVec(val, "names");
+	}
+	virtual void LoadFromJson(const rapidjson::Value & val)
+	{
+		ParamItemBase::LoadFromJson(val);
+		_vals = JsonGetIntVec(val["vals"]);
+		_min = JsonGetIntVec(val["min"]);
+		_max = JsonGetIntVec(val["max"]);
+		_scales = JsonGetFloatVec(val["scales"]);
+		_names = JsonGetStrVec(val["names"]);
+	}
+	virtual void SaveToJson(rapidjson::Value & val, rapidjson::Document& doc)
+	{
+		auto& alloc = doc.GetAllocator();
+		val.AddMember(JsonParseStr("type", doc), JsonParseStr("slider_list", doc), alloc);
+		ParamItemBase::SaveToJson(val, doc);
+		val.AddMember(JsonParseStr("vals", doc), JsonParseIntVec(_vals, doc), alloc);
+		val.AddMember(JsonParseStr("min", doc), JsonParseIntVec(_min, doc), alloc);
+		val.AddMember(JsonParseStr("max", doc), JsonParseIntVec(_max, doc), alloc);
+		val.AddMember(JsonParseStr("scales", doc), JsonParseFloatVec(_scales, doc), alloc);
+		val.AddMember(JsonParseStr("names", doc), JsonParseVecStr(_names, doc), alloc);
+	}
+
+	virtual void InitCtrl(NamaDemo_YXL* wnd)
+	{
+		CV_Assert(_vals.size() == _min.size() && _vals.size() == _max.size() && _vals.size() == _scales.size() && _vals.size() == _names.size());
+		ParamItemBase::InitCtrl(wnd);
+
+		_label_name = new QLabel(StdStr2QStr(_show_name));
+		_vert_layout_left = new QVBoxLayout();
+		_vert_layout_left->addWidget(_label_name);
+		_vert_layout_left->addStretch();
+		_vert_layout_right = new QVBoxLayout();
+		for (int i(0); i != _vals.size(); ++i)
+		{
+			auto layout = new QHBoxLayout();
+			_hori_layouts.push_back(layout);
+			auto slider = new QSlider();
+			_sliders.push_back(slider);
+			auto label = new QLabel();
+			_labels.push_back(label);
+
+			slider->setRange(_min[i], _max[i]);
+			slider->setValue(0);
+			slider->setOrientation(Qt::Orientation::Horizontal);
+			slider->setMinimumHeight(15);
+			QObject::connect(slider, SIGNAL(valueChanged(int)), wnd, SLOT(SliderChanged(int)));
+			layout->addWidget(slider);
+
+			label->setText(StdStr2QStr("0"));
+			label->setMinimumWidth(30);
+			label->setMaximumWidth(30);
+			label->setAlignment(Qt::AlignRight);
+			layout->addWidget(label);
+
+			_vert_layout_right->addLayout(layout);
+		}
+		_layout->addLayout(_vert_layout_left);
+		_layout->addLayout(_vert_layout_right);
+	}
+
+	virtual void UpdateCtrlValue()
+	{
+		_is_updating = true;
+		ParamItemBase::UpdateCtrlValue();
+		for (int i(0); i != _vals.size(); ++i)
+		{
+			if (i + 1 == _vals.size())
+				_is_updating = false;
+			SetCtrlData(_sliders[i], _vals[i]);
+		}
+	}
+
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	{
+		if (_is_updating)
+			return;
+		std::vector<double> tmp(4);
+		bool ret=false;
+		if (propsUsed.size() > _prop_idx)
+			ret=nama->GetPropParameterDv(propsUsed[_prop_idx], _param, tmp);
+		if (ret)
+			for (int i(0); i != _vals.size(); ++i)
+				_vals[i] = static_cast<float>(tmp[i]) / _scales[i];
+	}
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	{
+		bool is_find(false);
+		for(auto& slider:_sliders)
+			if (sender == slider)
+			{
+				is_find = true;
+				break;
+			}
+		if (is_find == false)
+			return false;
+		if (_is_updating)
+			return true;
+
+		std::vector<double> nama_vals;
+		for (int i(0); i != _vals.size(); ++i)
+		{
+			_vals[i] = _sliders[i]->value();
+			auto tmp = _vals[i]*_scales[i];
+			_labels[i]->setText(QString::number(tmp));
+			nama_vals.push_back(tmp);
+		}
+		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
+			nama->SetPropParameter(propsUsed[_prop_idx], _param, nama_vals);
+		return true;
+	}
+
+protected:
+	std::vector<int> _vals, _min, _max;
+	std::vector<float> _scales;
+	std::vector<std::string> _names;
+
+protected:
+	QLabel* _label_name = nullptr;
+	QVBoxLayout* _vert_layout_left = nullptr;
+	QVBoxLayout* _vert_layout_right = nullptr;
+
+	std::vector<QHBoxLayout*> _hori_layouts;
+	std::vector<QSlider*> _sliders;
+	std::vector<QLabel*> _labels;
+	
+	bool _is_updating = false;
 };
 
 namespace YXL
@@ -322,6 +456,9 @@ namespace YXL
 				case ParamItemBase::TYPE_COMBOBOX:
 					ret = std::shared_ptr<ParamItemBase>(new ParamItemComboBox);
 					break;
+				case ParamItemBase::TYPE_SLIDER_LIST:
+					ret = std::shared_ptr<ParamItemBase>(new ParamItemSliderList);
+					break;
 				default:
 					break;
 				}
@@ -340,6 +477,8 @@ namespace YXL
 					return ParamItemSlider::IsType(val);
 				case ParamItemBase::TYPE_COMBOBOX:
 					return ParamItemComboBox::IsType(val);
+				case ParamItemBase::TYPE_SLIDER_LIST:
+					return ParamItemSliderList::IsType(val);
 				default:
 					break;
 				}
@@ -356,6 +495,8 @@ namespace YXL
 						return ParamItemBase::TYPE_SLIDER;
 					else if ("combobox" == name)
 						return ParamItemBase::TYPE_COMBOBOX;
+					else if ("slider_list" == name)
+						return ParamItemBase::TYPE_SLIDER_LIST;
 				}
 				return ParamItemBase::TYPE_NONE;
 			}
@@ -415,7 +556,9 @@ public:
 				{
 					std::vector<std::shared_ptr<ParamItemBase> > params;
 					_json_ctrl->ReadValue(params, name, root["params"]);
-					param_lists[name].params = params;
+					for (auto& item : params)
+						if (item)
+							param_lists[name].params.push_back(item);
 				}
 		
 			}

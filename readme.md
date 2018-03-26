@@ -49,36 +49,51 @@ All controls' setting are in node "params". Each sub-node within "params" is a p
 - checkbox
 ```C
 {
-    "type": "checkbox",
-    "show_name": "is_beauty_on",
-    "tooltip": "is_beauty_on",
-    "param": "is_beauty_on",
-    "prop_idx": 0,
-    "val": false
+	"type": "checkbox",
+	"show_name": "is_beauty_on",
+	"tooltip": "is_beauty_on",
+	"param": "is_beauty_on",
+	"prop_idx": 0,
+	"val": false
 }
 ```
 - slider
 ```C
 {
-    "type": "slider",
-    "show_name": "美白",
-    "tooltip": "",
-    "param": "color_level",
-    "prop_idx": 0,
-    "val": 0,
-    "scale": 0.01,
-    "range": [0, 100]
+	"type": "slider",
+	"show_name": "美白",
+	"tooltip": "",
+	"param": "color_level",
+	"prop_idx": 0,
+	"val": 0,
+	"scale": 0.01,
+	"range": [0, 100]
 }
 ```
 - combobox
 ```C
 {
-    "type": "combobox",
-    "show_name": "filter",
-    "tooltip": "",
-    "param": "filter_name",
-    "prop_idx": 0,
-    "val": "nature",
-    "combo_texts": ["nature", "delta", "electric", "slowlived"]
+	"type": "combobox",
+	"show_name": "filter",
+	"tooltip": "",
+	"param": "filter_name",
+	"prop_idx": 0,
+	"val": "nature",
+	"combo_texts": ["nature", "delta", "electric", "slowlived"]
+}
+```
+- slider list
+```C
+{
+	"type": "slider_list",
+	"show_name": "rotate",
+	"tooltip": "",
+	"param": "rotate",
+	"prop_idx": 0,
+	"vals": [0,0,0,0],
+	"min": [0,0,0,0],
+	"max": [100,100,100,100],
+	"scales": [0.01,0.01,0.01,0.01],
+	"names": ["a", "b", "c", "d"]
 }
 ```

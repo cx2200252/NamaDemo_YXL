@@ -31,7 +31,9 @@ public:
 
 	static bool IsType(const rapidjson::Value & val)
 	{
-		return val.IsObject() && val.HasMember("type") && val["type"].IsString() && val.HasMember("param") && val["param"].IsString() && val.HasMember("prop_idx") && val["prop_idx"].IsInt();
+		return val.IsObject() && val.HasMember("type") && val["type"].IsString()
+			&& JsonValHasMemberAndIsStr(val, "param")
+			&& JsonValHasMemberAndIsInt(val, "prop_idx");
 	}
 	virtual void LoadFromJson(const rapidjson::Value & val)
 	{
@@ -67,7 +69,6 @@ public:
 	}
 	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed) = 0;
 	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender) = 0;
-	virtual QObject* GetCtrl() = 0;
 	virtual bool SpinBoxChanged(QSpinBox* spinbox)
 	{
 		if (spinbox != _spin_box)
@@ -119,6 +120,7 @@ protected:
 protected:
 	QHBoxLayout* _layout = nullptr;
 	QSpinBox* _spin_box = nullptr;
+	QVBoxLayout* _v_layout = nullptr;
 };
 
 struct ParamList
