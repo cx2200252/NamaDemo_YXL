@@ -173,6 +173,14 @@ void FU::Nama::SetPropParameter(std::string prop, std::string name, std::string 
 	fuItemSetParams(iter->second, &name[0], &value[0]);
 }
 
+void FU::Nama::SetPropParameter(std::string prop, std::string name, std::vector<double>& value)
+{
+	auto iter = _props.find(prop);
+	if (iter == _props.end() || iter->second == 0)
+		return;
+	fuItemSetParamdv(iter->second, &name[0], &value[0], (int)value.size());
+}
+
 double FU::Nama::GetPropParameterD(std::string prop, std::string name)
 {
 	auto iter = _props.find(prop);
@@ -201,6 +209,14 @@ std::string FU::Nama::GetPropParameterStr(std::string prop, std::string name)
 	}
 	else
 		return std::string(buf);
+}
+
+bool FU::Nama::GetPropParameterDv(std::string prop, std::string name, std::vector<double>& value)
+{
+	auto iter = _props.find(prop);
+	if (iter == _props.end() || iter->second == 0 || value.empty())
+		return 0.0;
+	return fuItemSetParamdv(iter->second, &name[0], &value[0], value.size()) != 0;
 }
 
 int FU::Nama::CreateProp(const std::string & path)

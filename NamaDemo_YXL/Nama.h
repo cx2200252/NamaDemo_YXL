@@ -29,9 +29,11 @@ namespace FU
 
 		void SetPropParameter(std::string prop, std::string name, const double value);
 		void SetPropParameter(std::string prop, std::string name, std::string value);
+		void SetPropParameter(std::string prop, std::string name, std::vector<double>& value);
 
 		double GetPropParameterD(std::string prop, std::string name);
 		std::string GetPropParameterStr(std::string prop, std::string name);
+		bool GetPropParameterDv(std::string prop, std::string name, std::vector<double>& value);
 
 	private:
 		int CreateProp(const std::string& path);
