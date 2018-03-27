@@ -348,6 +348,10 @@ public:
 			_sliders.push_back(slider);
 			auto label = new QLabel();
 			_labels.push_back(label);
+			auto label_name = new QLabel(StdStr2QStr(_names[i]));
+			_label_names.push_back(label_name);
+
+			layout->addWidget(label_name);
 
 			slider->setRange(_min[i], _max[i]);
 			slider->setValue(0);
@@ -384,7 +388,7 @@ public:
 	{
 		if (_is_updating)
 			return;
-		std::vector<double> tmp(4);
+		std::vector<double> tmp(_vals.size());
 		bool ret=false;
 		if (propsUsed.size() > _prop_idx)
 			ret=nama->GetPropParameterDv(propsUsed[_prop_idx], _param, tmp);
@@ -432,6 +436,7 @@ protected:
 	std::vector<QHBoxLayout*> _hori_layouts;
 	std::vector<QSlider*> _sliders;
 	std::vector<QLabel*> _labels;
+	std::vector<QLabel*> _label_names;
 	
 	bool _is_updating = false;
 };
@@ -1059,7 +1064,7 @@ void SaveObj(int prop_handle, bool is_ext, int face_id, const std::string& save_
 	if (cnt < 8)
 		return;
 	unsigned char* buff = new unsigned char[cnt];
-	fuItemGetParamu8v(prop_handle, &param[0], buff, cnt);
+	fuItemGetParamu8v(prop_handle, &param[0], (char*)buff, cnt);
 
 	int n_vertex, n_triangle;
 	{

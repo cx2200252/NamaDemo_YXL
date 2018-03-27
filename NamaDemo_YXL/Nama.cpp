@@ -213,7 +213,10 @@ std::string FU::Nama::GetPropParameterStr(std::string prop, std::string name)
 
 bool FU::Nama::GetPropParameterDv(std::string prop, std::string name, std::vector<double>& value)
 {
-	return false;
+	auto iter = _props.find(prop);
+	if (iter == _props.end() || iter->second == 0 || value.empty())
+		return false;
+	return fuItemGetParamdv(iter->second, &name[0], &value[0], value.size())==value.size();
 }
 
 int FU::Nama::CreateProp(const std::string & path)
