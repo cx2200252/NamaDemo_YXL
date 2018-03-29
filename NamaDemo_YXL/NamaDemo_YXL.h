@@ -159,12 +159,15 @@ public:
 
 protected:
 	virtual void keyPressEvent(QKeyEvent * keyEvent);
+	virtual void keyReleaseEvent(QKeyEvent * keyEvent);
 
 private:
 	void InitFromConfig();
 	void LoadProps();
 	//ignore _resDir prefix
 	bool IsValidPropPath(CStr& path);
+	void ClearPropUsed();
+	void PopPropUsed();
 	bool AddPropUsed(CStr& path);
 	void UpdateSpinBoxRange();
 
@@ -208,6 +211,11 @@ private:
 	void SetCtrlData(QCheckBox * btn, bool isCheck);
 	void SetCtrlData(QComboBox * comboBox, int idx);
 	void SetCtrlData(QComboBox * comboBox, CStr& txt);
+
+private:
+	bool _is_ctrl_down = false;
+	bool _is_alt_down = false;
+	bool _is_shift_down = false;
 
 private:
 	std::vector<std::string> _propsUsed;

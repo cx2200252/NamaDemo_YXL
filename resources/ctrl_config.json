@@ -517,7 +517,7 @@
                 "tooltip": "1时可旋转",
                 "param": "rotate_state",
                 "prop_idx": 0,
-                "val": 0,
+                "val": 1,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -642,7 +642,7 @@
                 "tooltip": "动态灯光时，光在移动周期内的位置",
                 "param": "light_animate_pos",
                 "prop_idx": 0,
-                "val": 0,
+                "val": 53,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -655,7 +655,7 @@
                 "tooltip": "光延z轴旋转角度",
                 "param": "light_rot_angle_y",
                 "prop_idx": 0,
-                "val": 43,
+                "val": 30,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -674,26 +674,14 @@
             },
             {
                 "type": "slider",
-                "show_name": "sm_z_near",
-                "param": "sm_z_near",
+                "show_name": "sm_clip_plane_offset",
+                "param": "sm_clip_plane_offset",
                 "prop_idx": 0,
-                "val": 500,
+                "val": 25,
                 "scale": 1.0,
                 "range": [
-                    100,
-                    5000
-                ]
-            },
-            {
-                "type": "slider",
-                "show_name": "sm_z_far",
-                "param": "sm_z_far",
-                "prop_idx": 0,
-                "val": 2000,
-                "scale": 1.0,
-                "range": [
-                    100,
-                    5000
+                    0,
+                    500
                 ]
             },
             {
@@ -701,11 +689,11 @@
                 "show_name": "sm_basic_bias",
                 "param": "sm_basic_bias",
                 "prop_idx": 0,
-                "val": 41,
-                "scale": 0.00009999999747378752,
+                "val": 110,
+                "scale": 0.00000999999883788405,
                 "range": [
                     0,
-                    500
+                    1000
                 ]
             },
             {
@@ -713,11 +701,11 @@
                 "show_name": "sm_angle_bias",
                 "param": "sm_angle_bias",
                 "prop_idx": 0,
-                "val": 9,
-                "scale": 0.00009999999747378752,
+                "val": 10,
+                "scale": 0.00000999999883788405,
                 "range": [
                     0,
-                    500
+                    1000
                 ]
             },
             {
@@ -760,11 +748,11 @@
                 "param": "mtl",
                 "prop_idx": 0,
                 "vals": [
-                    38,
-                    56,
-                    0,
+                    10,
+                    76,
+                    10,
                     70,
-                    15
+                    14
                 ],
                 "min": [
                     0,

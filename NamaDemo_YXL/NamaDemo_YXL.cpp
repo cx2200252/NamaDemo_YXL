@@ -935,6 +935,13 @@ void NamaDemo_YXL::InitNama()
 
 void NamaDemo_YXL::keyPressEvent(QKeyEvent * keyEvent)
 {
+	if (keyEvent->modifiers() == Qt::ControlModifier)
+		_is_ctrl_down=true;
+	if (keyEvent->modifiers() == Qt::AltModifier)
+		_is_alt_down = true;
+	if (keyEvent->modifiers() == Qt::ShiftModifier)
+		_is_shift_down = true;
+
 	if (keyEvent->modifiers() == Qt::AltModifier)
 	{
 		std::string msg="";
@@ -949,6 +956,17 @@ void NamaDemo_YXL::keyPressEvent(QKeyEvent * keyEvent)
 	}
 
 	return QWidget::keyPressEvent(keyEvent);
+}
+
+void NamaDemo_YXL::keyReleaseEvent(QKeyEvent * keyEvent)
+{
+	if (keyEvent->modifiers() == Qt::ControlModifier)
+		_is_ctrl_down = false;
+	if (keyEvent->modifiers() == Qt::AltModifier)
+		_is_alt_down = false;
+	if (keyEvent->modifiers() == Qt::ShiftModifier)
+		_is_shift_down = false;
+	return QWidget::keyReleaseEvent(keyEvent);
 }
 
 //nama relative, must call in InitNama()
@@ -1019,6 +1037,25 @@ bool NamaDemo_YXL::IsValidPropPath(CStr & path)
 		}
 	}
 	return is_postfix_ok && CmFile::FileExist(g_resDir +path);
+}
+
+void NamaDemo_YXL::ClearPropUsed()
+{
+	std::vector<QListWidgetItem*> items;
+	for (int i(0); i != ui.listWidget_props_used->count(); ++i)
+		items.push_back(ui.listWidget_props_used->item(i));
+
+	for (auto&item : items)
+		UsedPropsItemDoubleClicked(item);
+}
+
+void NamaDemo_YXL::PopPropUsed()
+{
+	const int cnt = ui.listWidget_props_used->count();
+	if (cnt == 0)
+		return;
+	auto item = ui.listWidget_props_used->item(cnt - 1);
+	UsedPropsItemDoubleClicked(item);
 }
 
 bool NamaDemo_YXL::AddPropUsed(CStr& path)
@@ -1228,6 +1265,12 @@ void NamaDemo_YXL::PropsItemDoubleClicked(QTreeWidgetItem * item, int col)
 
 	if (false == IsValidPropPath(path))
 		return;
+
+	if (_is_ctrl_down)
+		ClearPropUsed();
+	else if (_is_alt_down)
+		PopPropUsed();
+
 	AddPropUsed(path);
 
 
