@@ -97,3 +97,9 @@ All controls' setting are in node "params". Each sub-node within "params" is a p
 	"names": ["a", "b", "c", "d"]
 }
 ```
+- horizontal line
+```C
+{
+	"type": "h_line"
+}
+```

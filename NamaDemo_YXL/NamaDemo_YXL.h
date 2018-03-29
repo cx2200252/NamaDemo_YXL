@@ -23,6 +23,7 @@ public:
 		TYPE_SLIDER,
 		TYPE_COMBOBOX,
 		TYPE_SLIDER_LIST,
+		TYPE_HORIZONAL_LINE,
 		TYPE_NONE
 	};
 
@@ -31,7 +32,7 @@ public:
 
 	static bool IsType(const rapidjson::Value & val)
 	{
-		return val.IsObject() && val.HasMember("type") && val["type"].IsString()
+		return val.IsObject() && JsonValHasMemberAndIsStr(val, "type")
 			&& JsonValHasMemberAndIsStr(val, "param")
 			&& JsonValHasMemberAndIsInt(val, "prop_idx");
 	}
@@ -61,11 +62,13 @@ public:
 
 	void SetSpinBoxRange(int min, int max)
 	{
-		_spin_box->setRange(min, max);
+		if(_spin_box)
+			_spin_box->setRange(min, max);
 	}
 	virtual void UpdateCtrlValue()
 	{
-		_spin_box->setValue(_prop_idx);
+		if (_spin_box)
+			_spin_box->setValue(_prop_idx);
 	}
 	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed) = 0;
 	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender) = 0;

@@ -370,6 +370,7 @@ public:
 		}
 		_layout->addLayout(_vert_layout_left);
 		_layout->addLayout(_vert_layout_right);
+
 	}
 
 	virtual void UpdateCtrlValue()
@@ -441,6 +442,51 @@ protected:
 	bool _is_updating = false;
 };
 
+struct ParamItemHLine :public ParamItemBase
+{
+public:
+	ParamItemHLine() :ParamItemBase(TYPE_HORIZONAL_LINE) {}
+
+	static bool IsType(const rapidjson::Value & val)
+	{
+		return val.IsObject()&&JsonValHasMemberAndIsStr(val, "type")&& JsonGetStr(val["type"])=="h_line";
+	}
+	virtual void LoadFromJson(const rapidjson::Value & val)
+	{
+		
+	}
+	virtual void SaveToJson(rapidjson::Value & val, rapidjson::Document& doc)
+	{
+		auto& alloc = doc.GetAllocator();
+		val.AddMember(JsonParseStr("type", doc), JsonParseStr("h_line", doc), alloc);
+	}
+	virtual void InitCtrl(NamaDemo_YXL* wnd)
+	{
+		_layout = new QHBoxLayout();
+
+		auto line = new QFrame();
+		line->setFrameShape(QFrame::HLine);
+		line->setFrameShadow(QFrame::Sunken);
+		_layout->addWidget(line);
+	}
+
+	virtual void UpdateCtrlValue()
+	{
+	}
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	{
+	}
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	{
+		return false;
+	}
+
+protected:
+
+protected:
+};
+
+
 namespace YXL
 {
 	namespace JSON
@@ -464,6 +510,9 @@ namespace YXL
 				case ParamItemBase::TYPE_SLIDER_LIST:
 					ret = std::shared_ptr<ParamItemBase>(new ParamItemSliderList);
 					break;
+				case ParamItemBase::TYPE_HORIZONAL_LINE:
+					ret = std::shared_ptr<ParamItemBase>(new ParamItemHLine);
+					break;
 				default:
 					break;
 				}
@@ -484,6 +533,8 @@ namespace YXL
 					return ParamItemComboBox::IsType(val);
 				case ParamItemBase::TYPE_SLIDER_LIST:
 					return ParamItemSliderList::IsType(val);
+				case ParamItemBase::TYPE_HORIZONAL_LINE:
+					return ParamItemHLine::IsType(val);
 				default:
 					break;
 				}
@@ -502,6 +553,8 @@ namespace YXL
 						return ParamItemBase::TYPE_COMBOBOX;
 					else if ("slider_list" == name)
 						return ParamItemBase::TYPE_SLIDER_LIST;
+					else if ("h_line" == name)
+						return ParamItemBase::TYPE_HORIZONAL_LINE;
 				}
 				return ParamItemBase::TYPE_NONE;
 			}
