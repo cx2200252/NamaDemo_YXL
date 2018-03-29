@@ -587,7 +587,7 @@
                 "show_name": "is_show_model",
                 "param": "is_show_model",
                 "prop_idx": 0,
-                "val": false
+                "val": true
             },
             {
                 "type": "checkbox",
@@ -621,7 +621,7 @@
                 "tooltip": "动态光的周期，秒",
                 "param": "cycle",
                 "prop_idx": 0,
-                "val": 8,
+                "val": 10,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -655,7 +655,7 @@
                 "tooltip": "光延z轴旋转角度",
                 "param": "light_rot_angle_y",
                 "prop_idx": 0,
-                "val": 30,
+                "val": 43,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -756,56 +756,15 @@
             },
             {
                 "type": "slider_list",
-                "show_name": "mtl_hair",
-                "param": "mtl_hair",
+                "show_name": "mtl",
+                "param": "mtl",
                 "prop_idx": 0,
                 "vals": [
                     38,
-                    69,
+                    56,
                     0,
                     70,
                     15
-                ],
-                "min": [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                ],
-                "max": [
-                    100,
-                    100,
-                    100,
-                    100,
-                    100
-                ],
-                "scales": [
-                    0.009999999776482582,
-                    0.009999999776482582,
-                    0.009999999776482582,
-                    0.009999999776482582,
-                    0.009999999776482582
-                ],
-                "names": [
-                    "Ka",
-                    "Kd",
-                    "Ks",
-                    "roughness",
-                    "F0"
-                ]
-            },
-            {
-                "type": "slider_list",
-                "show_name": "mtl_other",
-                "param": "mtl_other",
-                "prop_idx": 0,
-                "vals": [
-                    38,
-                    69,
-                    0,
-                    60,
-                    21
                 ],
                 "min": [
                     0,

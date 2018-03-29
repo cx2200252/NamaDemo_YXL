@@ -683,10 +683,13 @@ NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 	ui.checkBox_saveWithSrcImg->setChecked(is_check);
 
 	{
-		QRadioButton* btns[] = { ui.radioButton_update_every_frame_none, ui.radioButton_update_every_frame_write, ui.radioButton_update_every_frame_read};
+		/*QRadioButton* btns[] = { ui.radioButton_update_every_frame_none, ui.radioButton_update_every_frame_write, ui.radioButton_update_every_frame_read};
 		int update_every_frame_type = g_config->Get("update_every_frame_type", 0);
 		btns[update_every_frame_type]->setChecked(true);
-		ButtonClicked(btns[update_every_frame_type]);
+		ButtonClicked(btns[update_every_frame_type]);*/
+
+		ui.radioButton_update_every_frame_none->setChecked(true);
+		ButtonClicked(ui.radioButton_update_every_frame_none);
 	}
 
 	//SetParamRelatedButtonState();
@@ -1369,18 +1372,18 @@ void NamaDemo_YXL::ButtonClicked(QObject * obj)
 	}
 	else if (obj == ui.radioButton_update_every_frame_none)
 	{
-		g_config->Set("update_every_frame_type", 0, true);
+		//g_config->Set("update_every_frame_type", 0, true);
 		_param_update_every_frame_func = nullptr;
 	}
 	else if (obj == ui.radioButton_update_every_frame_write)
 	{
-		g_config->Set("update_every_frame_type", 1, true);
+		//g_config->Set("update_every_frame_type", 1, true);
 		_param_update_every_frame_func = &NamaDemo_YXL::SetAllParameter;
 	}
 
 	else if (obj == ui.radioButton_update_every_frame_read)
 	{
-		g_config->Set("update_every_frame_type", 2, true);
+		//g_config->Set("update_every_frame_type", 2, true);
 		_param_update_every_frame_func = &NamaDemo_YXL::UpdateParamsFromProp;
 	}
 }
