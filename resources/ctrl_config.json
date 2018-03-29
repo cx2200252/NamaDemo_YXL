@@ -1,19 +1,17 @@
 {
     "author": "yixuan lu",
     "params": {
-        "beauty": [
+        "Beauty": [
             {
                 "type": "checkbox",
                 "show_name": "is_beauty_on",
-                "tooltip": "",
                 "param": "is_beauty_on",
                 "prop_idx": 0,
-                "val": false
+                "val": true
             },
             {
                 "type": "checkbox",
                 "show_name": "denoise",
-                "tooltip": "",
                 "param": "heavy_denoise",
                 "prop_idx": 0,
                 "val": false
@@ -21,7 +19,6 @@
             {
                 "type": "checkbox",
                 "show_name": "lower_quality",
-                "tooltip": "",
                 "param": "lower_quality",
                 "prop_idx": 0,
                 "val": false
@@ -29,7 +26,6 @@
             {
                 "type": "combobox",
                 "show_name": "filter",
-                "tooltip": "",
                 "param": "filter_name",
                 "prop_idx": 0,
                 "val": "nature",
@@ -77,10 +73,9 @@
             {
                 "type": "slider",
                 "show_name": "美白",
-                "tooltip": "",
                 "param": "color_level",
                 "prop_idx": 0,
-                "val": 0,
+                "val": 20,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -90,10 +85,9 @@
             {
                 "type": "slider",
                 "show_name": "红润",
-                "tooltip": "",
                 "param": "red_level",
                 "prop_idx": 0,
-                "val": 0,
+                "val": 30,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -103,14 +97,13 @@
             {
                 "type": "slider",
                 "show_name": "磨皮",
-                "tooltip": "",
                 "param": "blur_level",
                 "prop_idx": 0,
-                "val": 0,
-                "scale": 0.009999999776482582,
+                "val": 3,
+                "scale": 1.0,
                 "range": [
                     0,
-                    100
+                    6
                 ]
             },
             {
@@ -119,7 +112,7 @@
                 "tooltip": "0:女神，1：网红，2：自然，3：默认",
                 "param": "face_shape",
                 "prop_idx": 0,
-                "val": 0,
+                "val": 3,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -129,7 +122,6 @@
             {
                 "type": "slider",
                 "show_name": "变形程度",
-                "tooltip": "",
                 "param": "face_shape_level",
                 "prop_idx": 0,
                 "val": 0,
@@ -142,8 +134,304 @@
             {
                 "type": "slider",
                 "show_name": "大眼",
-                "tooltip": "",
                 "param": "eye_enlarging",
+                "prop_idx": 0,
+                "val": 50,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "瘦脸",
+                "param": "cheek_thinning",
+                "prop_idx": 0,
+                "val": 100,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            }
+        ],
+        "Hair": [
+            {
+                "type": "checkbox",
+                "show_name": "inpainting",
+                "param": "inpainting",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "face_hack",
+                "param": "face_hack",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "render_hair",
+                "param": "render_hair",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "slider",
+                "show_name": "show_type",
+                "param": "show_type",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "mask_threshold",
+                "param": "mask_threshold",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    255
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "scale",
+                "param": "scale",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    150
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "trans_x",
+                "param": "trans_x",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -1000,
+                    1000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "trans_y",
+                "param": "trans_y",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -1000,
+                    1000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "trans_z",
+                "param": "trans_z",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -1000,
+                    1000
+                ]
+            }
+        ],
+        "Portrait Lighting": [
+            {
+                "type": "checkbox",
+                "show_name": "show_light_res",
+                "param": "show_light_res",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "show_light_res_with_blur",
+                "param": "show_light_res_with_blur",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "reset_rot",
+                "param": "reset_rot",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "with_rot",
+                "param": "with_rot",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "with_trans",
+                "param": "with_trans",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "use_bg_seg",
+                "param": "use_bg_seg",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "flip_effect",
+                "param": "flip_effect",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_save",
+                "param": "is_save",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "slider",
+                "show_name": "pos_x",
+                "param": "pos_x",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -1000,
+                    1000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "pos_y",
+                "param": "pos_y",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -1000,
+                    1000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "pos_z",
+                "param": "pos_z",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -1000,
+                    1000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "dir_x",
+                "param": "dir_x",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -100,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "dir_y",
+                "param": "dir_y",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -100,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "dir_z",
+                "param": "dir_z",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    -100,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "inner",
+                "param": "inner",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    90
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "outter",
+                "param": "outter",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    90
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "strength",
+                "param": "strength",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    200
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "brightness",
+                "param": "brightness",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 0.009999999776482582,
+                "range": [
+                    -2000,
+                    2000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "lighting_blur_level",
+                "param": "lighting_blur_level",
                 "prop_idx": 0,
                 "val": 0,
                 "scale": 0.009999999776482582,
@@ -154,15 +442,398 @@
             },
             {
                 "type": "slider",
-                "show_name": "瘦脸",
-                "tooltip": "",
-                "param": "cheek_thinning",
+                "show_name": "level",
+                "param": "level",
                 "prop_idx": 0,
                 "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
                     100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "darken_strength",
+                "param": "darken_strength",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    200
+                ]
+            }
+        ],
+        "Portrait Relief": [
+            {
+                "type": "checkbox",
+                "show_name": "is_flip",
+                "param": "is_flip",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_vertical",
+                "param": "is_vertical",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "h_line"
+            },
+            {
+                "type": "checkbox",
+                "show_name": "bg_rotate",
+                "param": "bg_rotate",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_rotate_continuous",
+                "tooltip": "用于手机端记录上次旋转状态",
+                "param": "is_rotate_continuous",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "slider",
+                "show_name": "max_angle",
+                "tooltip": "模型的最大旋转角度",
+                "param": "max_angle",
+                "prop_idx": 0,
+                "val": 60,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    180
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "rotate_state",
+                "tooltip": "1时可旋转",
+                "param": "rotate_state",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": "slider_list",
+                "show_name": "rotate",
+                "param": "rotate",
+                "prop_idx": 0,
+                "vals": [
+                    50,
+                    50,
+                    50,
+                    50
+                ],
+                "min": [
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "max": [
+                    100,
+                    100,
+                    100,
+                    100
+                ],
+                "scales": [
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582
+                ],
+                "names": [
+                    "src_x",
+                    "src_y",
+                    "dest_x",
+                    "dest_y"
+                ]
+            },
+            {
+                "type": "h_line"
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_show_pic",
+                "param": "is_show_pic",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "slider",
+                "show_name": "model_type",
+                "param": "model_type",
+                "prop_idx": 0,
+                "val": 2,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_show_model",
+                "param": "is_show_model",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_relighting",
+                "param": "is_relighting",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_linear_color",
+                "tooltip": "是否转换到linear空间做relighting",
+                "param": "is_linear_color",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "h_line"
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_dynamic_light",
+                "tooltip": "灯光旋转，否则从正前方照射",
+                "param": "is_dynamic_light",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "slider",
+                "show_name": "cycle",
+                "tooltip": "动态光的周期，秒",
+                "param": "cycle",
+                "prop_idx": 0,
+                "val": 8,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    30
+                ]
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_auto_light",
+                "tooltip": "动态灯光时，光自动移动",
+                "param": "is_auto_light",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "slider",
+                "show_name": "light_animate_pos",
+                "tooltip": "动态灯光时，光在移动周期内的位置",
+                "param": "light_animate_pos",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "light_rot_angle_y",
+                "tooltip": "光延z轴旋转角度",
+                "param": "light_rot_angle_y",
+                "prop_idx": 0,
+                "val": 30,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    90
+                ]
+            },
+            {
+                "type": "h_line"
+            },
+            {
+                "type": "checkbox",
+                "show_name": "sm_is_shadow",
+                "param": "sm_is_shadow",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "slider",
+                "show_name": "sm_z_near",
+                "param": "sm_z_near",
+                "prop_idx": 0,
+                "val": 500,
+                "scale": 1.0,
+                "range": [
+                    100,
+                    5000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "sm_z_far",
+                "param": "sm_z_far",
+                "prop_idx": 0,
+                "val": 2000,
+                "scale": 1.0,
+                "range": [
+                    100,
+                    5000
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "sm_basic_bias",
+                "param": "sm_basic_bias",
+                "prop_idx": 0,
+                "val": 41,
+                "scale": 0.00009999999747378752,
+                "range": [
+                    0,
+                    500
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "sm_angle_bias",
+                "param": "sm_angle_bias",
+                "prop_idx": 0,
+                "val": 9,
+                "scale": 0.00009999999747378752,
+                "range": [
+                    0,
+                    500
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "sm_half_k_size",
+                "param": "sm_half_k_size",
+                "prop_idx": 0,
+                "val": 3,
+                "scale": 1.0,
+                "range": [
+                    0,
+                    10
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "sm_step",
+                "param": "sm_step",
+                "prop_idx": 0,
+                "val": 300,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    500
+                ]
+            },
+            {
+                "type": "h_line"
+            },
+            {
+                "type": "checkbox",
+                "show_name": "use_normal_map",
+                "param": "use_normal_map",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "slider_list",
+                "show_name": "mtl_hair",
+                "param": "mtl_hair",
+                "prop_idx": 0,
+                "vals": [
+                    38,
+                    69,
+                    0,
+                    70,
+                    15
+                ],
+                "min": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "max": [
+                    100,
+                    100,
+                    100,
+                    100,
+                    100
+                ],
+                "scales": [
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582
+                ],
+                "names": [
+                    "Ka",
+                    "Kd",
+                    "Ks",
+                    "roughness",
+                    "F0"
+                ]
+            },
+            {
+                "type": "slider_list",
+                "show_name": "mtl_other",
+                "param": "mtl_other",
+                "prop_idx": 0,
+                "vals": [
+                    38,
+                    69,
+                    0,
+                    60,
+                    21
+                ],
+                "min": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "max": [
+                    100,
+                    100,
+                    100,
+                    100,
+                    100
+                ],
+                "scales": [
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582
+                ],
+                "names": [
+                    "Ka",
+                    "Kd",
+                    "Ks",
+                    "roughness",
+                    "F0"
                 ]
             }
         ]
