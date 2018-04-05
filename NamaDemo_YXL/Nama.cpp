@@ -181,6 +181,14 @@ void FU::Nama::SetPropParameter(std::string prop, std::string name, std::vector<
 	fuItemSetParamdv(iter->second, &name[0], &value[0], (int)value.size());
 }
 
+void FU::Nama::SetPropParameter(std::string prop, std::string name, char * value, int size)
+{
+	auto iter = _props.find(prop);
+	if (iter == _props.end() || iter->second == 0)
+		return;
+	fuItemSetParamu8v(iter->second, &name[0], value, size);
+}
+
 double FU::Nama::GetPropParameterD(std::string prop, std::string name)
 {
 	auto iter = _props.find(prop);

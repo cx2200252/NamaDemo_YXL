@@ -960,11 +960,11 @@ void NamaDemo_YXL::keyPressEvent(QKeyEvent * keyEvent)
 
 void NamaDemo_YXL::keyReleaseEvent(QKeyEvent * keyEvent)
 {
-	if (keyEvent->modifiers() == Qt::ControlModifier)
+	if (keyEvent->modifiers() == Qt::ControlModifier || keyEvent->key() == Qt::Key::Key_Control)
 		_is_ctrl_down = false;
-	if (keyEvent->modifiers() == Qt::AltModifier)
+	if (keyEvent->modifiers() == Qt::AltModifier || keyEvent->key() == Qt::Key::Key_Alt)
 		_is_alt_down = false;
-	if (keyEvent->modifiers() == Qt::ShiftModifier)
+	if (keyEvent->modifiers() == Qt::ShiftModifier || keyEvent->key() == Qt::Key::Key_Shift)
 		_is_shift_down = false;
 	return QWidget::keyReleaseEvent(keyEvent);
 }
