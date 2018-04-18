@@ -28,7 +28,7 @@
                 "show_name": "filter",
                 "param": "filter_name",
                 "prop_idx": 0,
-                "val": "nature",
+                "val": "sunshine",
                 "combo_texts": [
                     "nature",
                     "delta",
@@ -75,7 +75,7 @@
                 "show_name": "美白",
                 "param": "color_level",
                 "prop_idx": 0,
-                "val": 20,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -87,7 +87,7 @@
                 "show_name": "红润",
                 "param": "red_level",
                 "prop_idx": 0,
-                "val": 30,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -99,7 +99,7 @@
                 "show_name": "磨皮",
                 "param": "blur_level",
                 "prop_idx": 0,
-                "val": 3,
+                "val": 6,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -124,7 +124,7 @@
                 "show_name": "变形程度",
                 "param": "face_shape_level",
                 "prop_idx": 0,
-                "val": 0,
+                "val": 100,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -148,7 +148,7 @@
                 "show_name": "瘦脸",
                 "param": "cheek_thinning",
                 "prop_idx": 0,
-                "val": 100,
+                "val": 50,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -485,10 +485,10 @@
             },
             {
                 "type": "checkbox",
-                "show_name": "bg_rotate",
-                "param": "bg_rotate",
+                "show_name": "rotate_hori_only",
+                "param": "rotate_hori_only",
                 "prop_idx": 0,
-                "val": true
+                "val": false
             },
             {
                 "type": "checkbox",
@@ -517,7 +517,7 @@
                 "tooltip": "1时可旋转",
                 "param": "rotate_state",
                 "prop_idx": 0,
-                "val": 1,
+                "val": 0,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -530,7 +530,7 @@
                 "param": "rotate",
                 "prop_idx": 0,
                 "vals": [
-                    50,
+                    51,
                     50,
                     50,
                     50
@@ -591,16 +591,16 @@
             },
             {
                 "type": "checkbox",
-                "show_name": "is_relighting",
-                "param": "is_relighting",
+                "show_name": "is_ao",
+                "param": "is_ao",
                 "prop_idx": 0,
-                "val": true
+                "val": false
             },
             {
                 "type": "checkbox",
-                "show_name": "is_linear_color",
+                "show_name": "is_gamma",
                 "tooltip": "是否转换到linear空间做relighting",
-                "param": "is_linear_color",
+                "param": "is_gamma",
                 "prop_idx": 0,
                 "val": false
             },
@@ -613,124 +613,7 @@
                 "tooltip": "灯光旋转，否则从正前方照射",
                 "param": "is_dynamic_light",
                 "prop_idx": 0,
-                "val": true
-            },
-            {
-                "type": "slider",
-                "show_name": "cycle",
-                "tooltip": "动态光的周期，秒",
-                "param": "cycle",
-                "prop_idx": 0,
-                "val": 10,
-                "scale": 1.0,
-                "range": [
-                    0,
-                    30
-                ]
-            },
-            {
-                "type": "checkbox",
-                "show_name": "is_auto_light",
-                "tooltip": "动态灯光时，光自动移动",
-                "param": "is_auto_light",
-                "prop_idx": 0,
-                "val": true
-            },
-            {
-                "type": "slider",
-                "show_name": "light_animate_pos",
-                "tooltip": "动态灯光时，光在移动周期内的位置",
-                "param": "light_animate_pos",
-                "prop_idx": 0,
-                "val": 53,
-                "scale": 0.009999999776482582,
-                "range": [
-                    0,
-                    100
-                ]
-            },
-            {
-                "type": "slider",
-                "show_name": "light_rot_angle_y",
-                "tooltip": "光延z轴旋转角度",
-                "param": "light_rot_angle_y",
-                "prop_idx": 0,
-                "val": 30,
-                "scale": 1.0,
-                "range": [
-                    0,
-                    90
-                ]
-            },
-            {
-                "type": "h_line"
-            },
-            {
-                "type": "checkbox",
-                "show_name": "sm_is_shadow",
-                "param": "sm_is_shadow",
-                "prop_idx": 0,
-                "val": true
-            },
-            {
-                "type": "slider",
-                "show_name": "sm_clip_plane_offset",
-                "param": "sm_clip_plane_offset",
-                "prop_idx": 0,
-                "val": 25,
-                "scale": 1.0,
-                "range": [
-                    0,
-                    500
-                ]
-            },
-            {
-                "type": "slider",
-                "show_name": "sm_basic_bias",
-                "param": "sm_basic_bias",
-                "prop_idx": 0,
-                "val": 110,
-                "scale": 0.00000999999883788405,
-                "range": [
-                    0,
-                    1000
-                ]
-            },
-            {
-                "type": "slider",
-                "show_name": "sm_angle_bias",
-                "param": "sm_angle_bias",
-                "prop_idx": 0,
-                "val": 10,
-                "scale": 0.00000999999883788405,
-                "range": [
-                    0,
-                    1000
-                ]
-            },
-            {
-                "type": "slider",
-                "show_name": "sm_half_k_size",
-                "param": "sm_half_k_size",
-                "prop_idx": 0,
-                "val": 3,
-                "scale": 1.0,
-                "range": [
-                    0,
-                    10
-                ]
-            },
-            {
-                "type": "slider",
-                "show_name": "sm_step",
-                "param": "sm_step",
-                "prop_idx": 0,
-                "val": 300,
-                "scale": 0.009999999776482582,
-                "range": [
-                    0,
-                    500
-                ]
+                "val": false
             },
             {
                 "type": "h_line"
@@ -748,9 +631,9 @@
                 "param": "mtl",
                 "prop_idx": 0,
                 "vals": [
-                    10,
-                    76,
-                    10,
+                    21,
+                    73,
+                    6,
                     70,
                     14
                 ],

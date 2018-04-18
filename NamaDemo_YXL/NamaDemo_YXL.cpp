@@ -648,8 +648,6 @@ private:
 };
 std::shared_ptr<Config> g_config(new Config);
 
-
-
 NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 	: QWidget(parent)
 {
@@ -942,7 +940,7 @@ void NamaDemo_YXL::keyPressEvent(QKeyEvent * keyEvent)
 	if (keyEvent->modifiers() == Qt::ShiftModifier)
 		_is_shift_down = true;
 
-	if (keyEvent->modifiers() == Qt::AltModifier)
+	if (_is_alt_down)
 	{
 		std::string msg="";
 		if (keyEvent->key() == Qt::Key::Key_S)
@@ -952,6 +950,18 @@ void NamaDemo_YXL::keyPressEvent(QKeyEvent * keyEvent)
 		if ("" != msg)
 		{
 			QMessageBox::information(this, StdStr2QStr("NamaDemo_YXL"), StdStr2QStr(msg), QMessageBox::Ok);
+		}
+	}
+	if (_is_ctrl_down)
+	{
+		if (keyEvent->key() == Qt::Key::Key_S)
+		{
+			ui.pushButton_savePic_stop->click();
+			if (ui.pushButton_savePic_start->isEnabled())
+			{
+				ui.spinBox_savePic_cnt->setValue(1);
+				ButtonClicked(ui.pushButton_savePic_start);
+			}
 		}
 	}
 
@@ -1101,8 +1111,28 @@ void NamaDemo_YXL::UpdatePropsUsed()
 	SaveParams();
 }
 
+std::vector<char> buff;
+
 void NamaDemo_YXL::UpdateCtrlValue()
 {
+	if (_nama && _is_shift_down && false== _propsUsed.empty())
+	{
+		std::string path = CmFile::BrowseFile("Bin (*.bin)\0*.bin\0All (*.*)\0*.*\0\0");
+		if ("" != path)
+		{
+			YXL::LoadFileContentBinary(path, buff);
+			auto a = cv::getTickCount();
+			//_nama->SetPropParameter(_propsUsed[0], "pr_data", &buff[0], buff.size());
+
+			long long val = (long long)&buff[0];
+			_nama->SetPropParameter(_propsUsed[0], "pr_data_ptr", val);
+			_nama->SetPropParameter(_propsUsed[0], "pr_data_size", (long long)buff.size());
+
+			auto b = cv::getTickCount();
+			std::cout <<"set time: "<< (b - a) / cv::getTickFrequency() << std::endl;
+		}
+	}
+
 	auto& param = _param_lists[_cur_param_list];
 	for (auto& item : param.params)
 		item->UpdateCtrlValue();
@@ -1179,7 +1209,9 @@ void SaveObj(int prop_handle, bool is_ext, int face_id, const std::string& save_
 		fout << "vt " << float(uv[2 * i]) / 65535.f << " " << float(uv[2 * i + 1]) / 65535.f << std::endl;
 	int order[] = { 2, 1, 0 };
 	for (int i(0); i != n_triangle; ++i)
-		fout << "f " << tris[3 * i + order[0]] + 1 <<"/"<< tris[3 * i + order[0]] + 1 << " " << tris[3 * i + order[1]] + 1 << "/" << tris[3 * i + order[1]] + 1 << " " << tris[3 * i + order[2]] + 1 << "/" << tris[3 * i + order[2]] + 1 << std::endl;
+		fout << "f " << tris[3 * i + order[0]] + 1 <<"/"<< tris[3 * i + order[0]] + 1 << " " 
+		<< tris[3 * i + order[1]] + 1 << "/" << tris[3 * i + order[1]] + 1 << " " 
+		<< tris[3 * i + order[2]] + 1 << "/" << tris[3 * i + order[2]] + 1 << std::endl;
 
 	fout.close();
 }
@@ -1402,7 +1434,7 @@ void NamaDemo_YXL::ButtonClicked(QObject * obj)
 	{
 		_save_img_cur_idx = 0;
 		std::string time = YXL::GetCurTime();
-		_save_img_path_format = g_saveDir + time + "/%06d.png";
+		_save_img_path_format = g_saveDir + time + "_%06d.png";
 		CmFile::MkDir(CmFile::GetFolder(_save_img_path_format));
 		ui.pushButton_savePic_start->setEnabled(false);
 		ui.pushButton_savePic_stop->setEnabled(true);

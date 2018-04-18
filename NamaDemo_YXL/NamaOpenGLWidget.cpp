@@ -104,12 +104,12 @@ void NamaOpenGLWidget::paintGL()
 	static int64 timePre = cv::getTickCount();
 
 	++count;
-	if (count > 1000)
+	if (count > 10)
 	{
 		count = 0;
 		int64 tmp = cv::getTickCount();
-		float fps = cv::getTickFrequency() * 1000.0 / (tmp - timePre);
-		printf("FPS: %6.3f\n", fps);
+		float fps = cv::getTickFrequency() * 10.0 / (tmp - timePre);
+		_mainWnd->setWindowTitle(QString::fromLocal8Bit(cv::format("NamaDemo_YXL    FPS: %6.3f\n", fps).c_str()));
 		timePre = tmp;
 	}
 
