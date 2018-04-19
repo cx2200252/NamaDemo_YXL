@@ -1121,16 +1121,17 @@ void NamaDemo_YXL::UpdateCtrlValue()
 		if ("" != path)
 		{
 			YXL::LoadFileContentBinary(path, buff);
-			auto a = cv::getTickCount();
+			//auto a = cv::getTickCount();
 			//_nama->SetPropParameter(_propsUsed[0], "pr_data", &buff[0], buff.size());
 
 			long long val = (long long)&buff[0];
 			_nama->SetPropParameter(_propsUsed[0], "pr_data_ptr", val);
 			_nama->SetPropParameter(_propsUsed[0], "pr_data_size", (long long)buff.size());
 
-			auto b = cv::getTickCount();
-			std::cout <<"set time: "<< (b - a) / cv::getTickFrequency() << std::endl;
+			//auto b = cv::getTickCount();
+			//std::cout <<"set time: "<< (b - a) / cv::getTickFrequency() << std::endl;
 		}
+		_is_shift_down = false;
 	}
 
 	auto& param = _param_lists[_cur_param_list];

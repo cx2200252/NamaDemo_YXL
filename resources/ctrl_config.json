@@ -478,7 +478,7 @@
                 "show_name": "is_vertical",
                 "param": "is_vertical",
                 "prop_idx": 0,
-                "val": true
+                "val": false
             },
             {
                 "type": "h_line"
@@ -504,7 +504,7 @@
                 "tooltip": "模型的最大旋转角度",
                 "param": "max_angle",
                 "prop_idx": 0,
-                "val": 60,
+                "val": 5,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -530,7 +530,7 @@
                 "param": "rotate",
                 "prop_idx": 0,
                 "vals": [
-                    51,
+                    35,
                     50,
                     50,
                     50
@@ -587,7 +587,7 @@
                 "show_name": "is_show_model",
                 "param": "is_show_model",
                 "prop_idx": 0,
-                "val": true
+                "val": false
             },
             {
                 "type": "checkbox",
@@ -602,7 +602,7 @@
                 "tooltip": "是否转换到linear空间做relighting",
                 "param": "is_gamma",
                 "prop_idx": 0,
-                "val": false
+                "val": true
             },
             {
                 "type": "h_line"
@@ -612,6 +612,13 @@
                 "show_name": "is_dynamic_light",
                 "tooltip": "灯光旋转，否则从正前方照射",
                 "param": "is_dynamic_light",
+                "prop_idx": 0,
+                "val": true
+            },
+            {
+                "type": "checkbox",
+                "show_name": "is_relighting",
+                "param": "is_relighting",
                 "prop_idx": 0,
                 "val": false
             },
@@ -631,11 +638,11 @@
                 "param": "mtl",
                 "prop_idx": 0,
                 "vals": [
-                    21,
-                    73,
-                    6,
-                    70,
-                    14
+                    40,
+                    80,
+                    10,
+                    40,
+                    1
                 ],
                 "min": [
                     0,
