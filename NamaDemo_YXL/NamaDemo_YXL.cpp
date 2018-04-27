@@ -1000,8 +1000,21 @@ void NamaDemo_YXL::LoadProps()
 	CStr propDir = g_resDir;
 	vecS dirs;
 	CmFile::GetSubFolders(propDir, dirs);
+	for (auto& dir : dirs)
+		dir = propDir + dir;
+
+	std::sort(dirs.begin(), dirs.end(), [](const std::string& a, const std::string& b) {
+		auto aa = YXL::GetFileInfo(a, YXL::FileInfo_LastWriteTime);
+		auto bb = YXL::GetFileInfo(b, YXL::FileInfo_LastWriteTime);
+		if (aa.first != bb.first)
+			return aa.first > bb.first;
+		else
+			return aa.second > bb.second;
+	});
+
 	for (auto dir : dirs)
 	{
+		dir = CmFile::GetNameNE(dir);
 		vecS names, tmp;
 		for (auto postfix : g_prop_postfixs)
 		{
