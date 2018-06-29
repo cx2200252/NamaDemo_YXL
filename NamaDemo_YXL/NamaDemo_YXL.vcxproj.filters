@@ -41,7 +41,7 @@
     <Filter Include="NewFilter1">
       <UniqueIdentifier>{45659131-0117-4e5f-8bc6-fd926ee4217a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NewFilter2">
+    <Filter Include="YXL">
       <UniqueIdentifier>{d578f356-880e-4f14-9eae-b0c6171895b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -82,11 +82,8 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DragDropListWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\YXL_code\YXL\CmFile.cpp">
-      <Filter>NewFilter2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\YXL_code\YXL\YXLHelper.cpp">
-      <Filter>NewFilter2</Filter>
+    <ClCompile Include="YXL\YXLHelper.cpp">
+      <Filter>YXL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,14 +110,11 @@
     <ClInclude Include="Nama.h">
       <Filter>NewFilter1</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\YXL_code\YXL\CmFile.h">
-      <Filter>NewFilter2</Filter>
+    <ClInclude Include="YXL\YXLHelper.h">
+      <Filter>YXL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\YXL_code\YXL\YXLHelper.h">
-      <Filter>NewFilter2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\YXL_code\YXL\YXLJsonReader.h">
-      <Filter>NewFilter2</Filter>
+    <ClInclude Include="YXL\YXLJsonReader.h">
+      <Filter>YXL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,32 +3,11 @@
     "params": {
         "Beauty": [
             {
-                "type": "checkbox",
-                "show_name": "is_beauty_on",
-                "param": "is_beauty_on",
-                "prop_idx": 0,
-                "val": true
-            },
-            {
-                "type": "checkbox",
-                "show_name": "denoise",
-                "param": "heavy_denoise",
-                "prop_idx": 0,
-                "val": false
-            },
-            {
-                "type": "checkbox",
-                "show_name": "lower_quality",
-                "param": "lower_quality",
-                "prop_idx": 0,
-                "val": false
-            },
-            {
                 "type": "combobox",
                 "show_name": "filter",
                 "param": "filter_name",
                 "prop_idx": 0,
-                "val": "sunshine",
+                "val": "dry",
                 "combo_texts": [
                     "nature",
                     "delta",
@@ -72,6 +51,18 @@
             },
             {
                 "type": "slider",
+                "show_name": "filter",
+                "param": "filter_level",
+                "prop_idx": 0,
+                "val": 100,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
                 "show_name": "美白",
                 "param": "color_level",
                 "prop_idx": 0,
@@ -105,6 +96,70 @@
                     0,
                     6
                 ]
+            },
+            {
+                "type": "checkbox",
+                "show_name": "lower_quality",
+                "param": "lower_quality",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "checkbox",
+                "show_name": "heavy_denoise",
+                "param": "heavy_denoise",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "slider",
+                "show_name": "blur_radius",
+                "param": "blur_radius",
+                "prop_idx": 0,
+                "val": 100,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "checkbox",
+                "show_name": "skin_detect",
+                "param": "skin_detect",
+                "prop_idx": 0,
+                "val": false
+            },
+            {
+                "type": "slider",
+                "show_name": "nonskin_blur_scale",
+                "param": "nonskin_blur_scale",
+                "prop_idx": 0,
+                "val": 45,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "blur_blend_ratio",
+                "param": "blur_blend_ratio",
+                "prop_idx": 0,
+                "val": 100,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "checkbox",
+                "show_name": "heavy_blur",
+                "param": "heavy_blur",
+                "prop_idx": 0,
+                "val": false
             },
             {
                 "type": "slider",
@@ -147,6 +202,54 @@
                 "type": "slider",
                 "show_name": "瘦脸",
                 "param": "cheek_thinning",
+                "prop_idx": 0,
+                "val": 50,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "intensity_nose",
+                "param": "intensity_nose",
+                "prop_idx": 0,
+                "val": 0,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "intensity_forehead",
+                "param": "intensity_forehead",
+                "prop_idx": 0,
+                "val": 50,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "intensity_mouth",
+                "param": "intensity_mouth",
+                "prop_idx": 0,
+                "val": 50,
+                "scale": 0.009999999776482582,
+                "range": [
+                    0,
+                    100
+                ]
+            },
+            {
+                "type": "slider",
+                "show_name": "intensity_chin",
+                "param": "intensity_chin",
                 "prop_idx": 0,
                 "val": 50,
                 "scale": 0.009999999776482582,
@@ -483,7 +586,7 @@
                 "show_name": "render_scale",
                 "param": "render_scale",
                 "prop_idx": 0,
-                "val": 94,
+                "val": 96,
                 "scale": 0.009999999776482582,
                 "range": [
                     50,
@@ -514,7 +617,7 @@
                 "tooltip": "模型的最大旋转角度",
                 "param": "max_angle",
                 "prop_idx": 0,
-                "val": 5,
+                "val": 51,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -540,7 +643,7 @@
                 "param": "rotate",
                 "prop_idx": 0,
                 "vals": [
-                    49,
+                    48,
                     50,
                     50,
                     50

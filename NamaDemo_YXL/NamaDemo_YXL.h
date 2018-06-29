@@ -8,7 +8,7 @@
 #include <memory>
 #include <qspinbox.h>
 #include <QScrollArea>
-#include <YXLJsonReader.h>
+#include "YXL/YXLJsonReader.h"
 
 
 

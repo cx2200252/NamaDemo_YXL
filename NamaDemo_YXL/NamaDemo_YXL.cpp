@@ -1,4 +1,3 @@
-#include "CmFile.h"
 #include "NamaDemo_YXL.h"
 #include <QButtonGroup>
 #include <qmessagebox.h>
@@ -6,8 +5,8 @@
 #include <qinputdialog.h>
 #include <qtimer.h>
 #include <qevent.h>
-#include <YXLHelper.h>
-#include <YXLJsonReader.h>
+#include "YXL/YXLHelper.h"
+#include "YXL/YXLJsonReader.h"
 #include <qmenu.h>
 #include <qspinbox.h>
 
@@ -653,7 +652,7 @@ NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	CmFile::MkDir(g_saveDir);
+	YXL::File::MkDir(g_saveDir);
 
 	LoadParams();
 
@@ -761,7 +760,7 @@ cv::Mat NamaDemo_YXL::GetSourceImage()
 		if (_cap_video)
 		{
 			*_cap_video >> img;
-			if (img.empty() && CmFile::FileExist(_path_video))
+			if (img.empty() && YXL::File::FileExist(_path_video))
 			{
 				_cap_video->open(_path_video);
 				*_cap_video >> img;
@@ -999,13 +998,13 @@ void NamaDemo_YXL::LoadProps()
 {
 	CStr propDir = g_resDir;
 	vecS dirs;
-	CmFile::GetSubFolders(propDir, dirs);
+	YXL::File::GetSubFolders(propDir, dirs);
 	for (auto& dir : dirs)
 		dir = propDir + dir;
 
 	std::sort(dirs.begin(), dirs.end(), [](const std::string& a, const std::string& b) {
-		auto aa = YXL::GetFileInfo(a, YXL::FileInfo_LastWriteTime);
-		auto bb = YXL::GetFileInfo(b, YXL::FileInfo_LastWriteTime);
+		auto aa = YXL::File::GetFileInfo(a, YXL::File::FileInfo_LastWriteTime);
+		auto bb = YXL::File::GetFileInfo(b, YXL::File::FileInfo_LastWriteTime);
 		if (aa.first != bb.first)
 			return aa.first > bb.first;
 		else
@@ -1014,11 +1013,11 @@ void NamaDemo_YXL::LoadProps()
 
 	for (auto dir : dirs)
 	{
-		dir = CmFile::GetNameNE(dir);
+		dir = YXL::File::GetNameNE(dir);
 		vecS names, tmp;
 		for (auto postfix : g_prop_postfixs)
 		{
-			CmFile::GetNames(propDir + dir + "/" + postfix, tmp);
+			YXL::File::GetNames(propDir + dir + "/" + postfix, tmp);
 			for (auto a : tmp)
 				names.push_back(propDir + dir + "/" + a);
 		}
@@ -1031,8 +1030,8 @@ void NamaDemo_YXL::LoadProps()
 		//parent_item->setText(0, _train_results[i].show_title);
 		
 		std::sort(names.begin(), names.end(), [](const std::string& a, const std::string& b) {
-			auto aa = YXL::GetFileInfo(a, YXL::FileInfo_LastWriteTime);
-			auto bb = YXL::GetFileInfo(b, YXL::FileInfo_LastWriteTime);
+			auto aa = YXL::File::GetFileInfo(a, YXL::File::FileInfo_LastWriteTime);
+			auto bb = YXL::File::GetFileInfo(b, YXL::File::FileInfo_LastWriteTime);
 			if (aa.first != bb.first)
 				return aa.first > bb.first;
 			else
@@ -1042,7 +1041,7 @@ void NamaDemo_YXL::LoadProps()
 		for (auto name : names)
 		{
 			auto* item = new QTreeWidgetItem(parent_item);
-			item->setText(0, StdStr2QStr(CmFile::GetName(name)));
+			item->setText(0, StdStr2QStr(YXL::File::GetName(name)));
 		}
 	}
 }
@@ -1059,7 +1058,7 @@ bool NamaDemo_YXL::IsValidPropPath(CStr & path)
 			break;
 		}
 	}
-	return is_postfix_ok && CmFile::FileExist(g_resDir +path);
+	return is_postfix_ok && YXL::File::FileExist(g_resDir +path);
 }
 
 void NamaDemo_YXL::ClearPropUsed()
@@ -1124,16 +1123,16 @@ void NamaDemo_YXL::UpdatePropsUsed()
 	SaveParams();
 }
 
-std::vector<char> buff;
+std::string buff;
 
 void NamaDemo_YXL::UpdateCtrlValue()
 {
 	if (_nama && _is_shift_down && false== _propsUsed.empty())
 	{
-		std::string path = CmFile::BrowseFile("Bin (*.bin)\0*.bin\0All (*.*)\0*.*\0\0");
+		std::string path = YXL::File::BrowseFile("Bin (*.bin)\0*.bin\0All (*.*)\0*.*\0\0");
 		if ("" != path)
 		{
-			YXL::LoadFileContentBinary(path, buff);
+			YXL::File::LoadFileContentBinary(path, buff);
 			//auto a = cv::getTickCount();
 			//_nama->SetPropParameter(_propsUsed[0], "pr_data", &buff[0], buff.size());
 
@@ -1432,24 +1431,24 @@ void NamaDemo_YXL::ButtonClicked(QObject * obj)
 	}
 	else if (obj == ui.pushButton_selPic)
 	{
-		auto str = CmFile::BrowseFile();
+		auto str = YXL::File::BrowseFile();
 		UseSourcePicture(str);
 	}
 	else if (obj == ui.pushButton_selVideo)
 	{
-		auto str = CmFile::BrowseFile("Video (*.avi;*.mp4;*MOV)\0*.avi;*.mp4;*MOV\0All (*.*)\0*.*\0\0");
+		auto str = YXL::File::BrowseFile("Video (*.avi;*.mp4;*MOV)\0*.avi;*.mp4;*MOV\0All (*.*)\0*.*\0\0");
 		UseSourceVideo(str);
 	}
 	else if (obj == ui.pushButton_saveDir)
 	{
-		CmFile::RunProgram("explorer", YXL::ToWindowsPath(g_saveDir), false, false);
+		YXL::File::RunProgram("explorer", YXL::File::ToWindowsPath(g_saveDir), false, false);
 	}
 	else if (obj == ui.pushButton_savePic_start)
 	{
 		_save_img_cur_idx = 0;
 		std::string time = YXL::GetCurTime();
 		_save_img_path_format = g_saveDir + time + "_%06d.png";
-		CmFile::MkDir(CmFile::GetFolder(_save_img_path_format));
+		YXL::File::MkDir(YXL::File::GetFolder(_save_img_path_format));
 		ui.pushButton_savePic_start->setEnabled(false);
 		ui.pushButton_savePic_stop->setEnabled(true);
 	}

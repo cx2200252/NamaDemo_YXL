@@ -1,5 +1,5 @@
 #pragma once
-#include "CmFile.h"
+#include "YXL/YXLHelper.h"
 
 class CCameraDS;
 

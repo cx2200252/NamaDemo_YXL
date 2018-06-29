@@ -30,12 +30,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>Z:\compiled\opencv\opencv-3.1.0\include;$(SolutionDir)/thirdparty/nama/;G:\YXL_code\YXL;$(IncludePath)</IncludePath>
+    <IncludePath>Z:\compiled\opencv\opencv-3.1.0\include;$(SolutionDir)/thirdparty/nama/;$(IncludePath)</IncludePath>
     <LibraryPath>Z:/compiled/opencv/opencv-3.1.0/vs2015 qt/x64/lib/$(Configuration);$(SolutionDir)/thirdparty/Nama/win64/$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>Z:\compiled\opencv\opencv-3.1.0\include;$(SolutionDir)/thirdparty/nama/;G:\YXL_code\YXL;$(IncludePath)</IncludePath>
+    <IncludePath>Z:\compiled\opencv\opencv-3.1.0\include;$(SolutionDir)/thirdparty/nama/;$(IncludePath)</IncludePath>
     <LibraryPath>Z:/compiled/opencv/opencv-3.1.0/vs2015 qt/x64/lib/$(Configuration);$(SolutionDir)/thirdparty/Nama/win64/$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -77,8 +77,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\YXL_code\YXL\CmFile.cpp" />
-    <ClCompile Include="..\..\..\YXL_code\YXL\YXLHelper.cpp" />
     <ClCompile Include="DragDropListWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_DragDropListWidget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -108,6 +106,7 @@
     <ClCompile Include="Nama.cpp" />
     <ClCompile Include="NamaDemo_YXL.cpp" />
     <ClCompile Include="NamaOpenGLWidget.cpp" />
+    <ClCompile Include="YXL\YXLHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="NamaDemo_YXL.h">
@@ -134,9 +133,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\YXL_code\YXL\CmFile.h" />
-    <ClInclude Include="..\..\..\YXL_code\YXL\YXLHelper.h" />
-    <ClInclude Include="..\..\..\YXL_code\YXL\YXLJsonReader.h" />
+    <ClInclude Include="YXL\YXLHelper.h" />
+    <ClInclude Include="YXL\YXLJsonReader.h" />
     <CustomBuild Include="DragDropListWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing DragDropListWidget.h...</Message>

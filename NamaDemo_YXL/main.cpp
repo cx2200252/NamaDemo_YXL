@@ -1,7 +1,7 @@
 #define POINTER_64 __ptr64
 #include "NamaDemo_YXL.h"
 #include <QtWidgets/QApplication>
-#include <YXLHelper.h>
+#include "YXL/YXLHelper.h"
 
 
 int main(int argc, char *argv[])

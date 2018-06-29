@@ -6,44 +6,44 @@
 
 #define _LOG_TIME_
 
-namespace FU
-{
-	size_t FileSize(std::ifstream& file)
-	{
-		std::streampos oldPos = file.tellg();
-
-		file.seekg(0, std::ios::beg);
-		std::streampos beg = file.tellg();
-		file.seekg(0, std::ios::end);
-		std::streampos end = file.tellg();
-
-		file.seekg(oldPos, std::ios::beg);
-
-		return static_cast<size_t>(end - beg);
-	}
-
-	template<typename type> bool LoadProp(const std::string& filepath, std::vector<type>& data)
-	{
-		std::ifstream fin(filepath, std::ios::binary);
-		if (false == fin.good())
-		{
-			fin.close();
-			return false;
-		}
-		size_t size = FileSize(fin);
-		if (0 == size)
-		{
-			fin.close();
-			return false;
-		}
-		data.resize(size / sizeof(type));
-		fin.read(reinterpret_cast<char*>(&data[0]), size);
-
-		fin.close();
-		return true;
-	}
-
-}
+//namespace FU
+//{
+//	size_t FileSize(std::ifstream& file)
+//	{
+//		std::streampos oldPos = file.tellg();
+//
+//		file.seekg(0, std::ios::beg);
+//		std::streampos beg = file.tellg();
+//		file.seekg(0, std::ios::end);
+//		std::streampos end = file.tellg();
+//
+//		file.seekg(oldPos, std::ios::beg);
+//
+//		return static_cast<size_t>(end - beg);
+//	}
+//
+//	template<typename type> bool LoadProp(const std::string& filepath, std::vector<type>& data)
+//	{
+//		std::ifstream fin(filepath, std::ios::binary);
+//		if (false == fin.good())
+//		{
+//			fin.close();
+//			return false;
+//		}
+//		size_t size = FileSize(fin);
+//		if (0 == size)
+//		{
+//			fin.close();
+//			return false;
+//		}
+//		data.resize(size / sizeof(type));
+//		fin.read(reinterpret_cast<char*>(&data[0]), size);
+//
+//		fin.close();
+//		return true;
+//	}
+//
+//}
 
 
 FU::Nama::Nama(CStr& resDir)
@@ -57,17 +57,16 @@ FU::Nama::Nama(CStr& resDir)
 
 void FU::Nama::Init(std::string v3Path)
 {
-	std::vector<char> v3data;
-	CV_Assert(true == FU::LoadProp(v3Path, v3data));
+	std::string v3data;
+	CV_Assert(true == YXL::File::LoadFileContentBinary(v3Path, v3data));
 	int ret = fuSetup((float*)&v3data[0], NULL, g_auth_package, sizeof(g_auth_package));
-
 }
 
 void FU::Nama::InitArdataExt(std::string path)
 {
-	std::vector<char> data;
+	std::string data;
 
-	CV_Assert(true == FU::LoadProp(path, data));
+	CV_Assert(true == YXL::File::LoadFileContentBinary(path, data));
 	fuLoadExtendedARData(&data[0], data.size());
 
 	std::cout << "load ardata ext data." << std::endl;
@@ -187,6 +186,19 @@ cv::Mat FU::Nama::Process(cv::Mat img)
 	}
 	//cv::imshow("in", in);
 
+	/*{
+		float exp[46] = { 0.0f };
+		fuGetFaceInfo(0, "expression", exp, 46);
+		std::cout << "[";
+		for (int i(0); i != 46; ++i)
+		{
+			if (i)
+				std::cout << ",";
+			std::cout << exp[i];
+		}
+		std::cout << "]" << std::endl;
+	}*/
+
 	return FromNamaOut(out);
 }
 
@@ -270,9 +282,9 @@ bool FU::Nama::GetPropParameterDv(std::string prop, std::string name, std::vecto
 
 int FU::Nama::CreateProp(const std::string & path)
 {
-	std::vector<char> data;
+	std::string data;
 
-	CV_Assert(true == FU::LoadProp(_resDir+path, data));
+	CV_Assert(true == YXL::File::LoadFileContentBinary(_resDir+path, data));
 	std::cout << "load bundle: "<< _resDir+path << std::endl;
 
 	int handle = fuCreateItemFromPackage(&data[0], data.size());
