@@ -184,6 +184,10 @@ private:
 	void UseSourcePicture(CStr& path);
 	void UseSourceVideo(CStr& path);
 
+	void StartRecording();
+	void StopRecording();
+	void SetRecordingState(bool is_recording);
+
 private slots:
 	void SetAllParameter();
 	void UpdateParamsFromProp();
@@ -236,12 +240,17 @@ private:
 	ParamUpdateEveryFrameFunc _param_update_every_frame_func = nullptr;
 
 private:
+	cv::Mat _nama_out_img;
+	cv::Mat _cur_show_img;
+
+private:
 	std::shared_ptr<QButtonGroup> _sourceBtnGroup = nullptr;
 	std::shared_ptr<QButtonGroup> _paramUpdateBtnGroup=nullptr;
 
 private:
 	std::string _save_img_path_format;
 	int _save_img_cur_idx = 0;
+	std::shared_ptr<cv::VideoWriter> _video_writer = nullptr;
 
 private:
 	//nama

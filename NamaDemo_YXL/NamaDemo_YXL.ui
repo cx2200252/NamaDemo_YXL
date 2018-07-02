@@ -53,7 +53,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_3">
        <property name="geometry">
@@ -720,7 +720,7 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>120</height>
+             <height>150</height>
             </size>
            </property>
            <property name="maximumSize">
@@ -738,7 +738,7 @@
               <x>10</x>
               <y>20</y>
               <width>312</width>
-              <height>91</height>
+              <height>121</height>
              </rect>
             </property>
             <layout class="QFormLayout" name="formLayout_6">
@@ -847,7 +847,7 @@
                </item>
               </layout>
              </item>
-             <item row="2" column="1">
+             <item row="3" column="1">
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
                 <widget class="QPushButton" name="pushButton_saveDir">
@@ -858,6 +858,62 @@
                </item>
                <item>
                 <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_28">
+               <property name="minimumSize">
+                <size>
+                 <width>72</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>黑体</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>视频：</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_30">
+               <item>
+                <widget class="QPushButton" name="pushButton_saveVideo_start">
+                 <property name="text">
+                  <string>开始</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_saveVideo_stop">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>停止</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_16">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -1196,7 +1252,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>181</x>
-     <y>419</y>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>606</x>
@@ -1249,6 +1305,38 @@
     <hint type="destinationlabel">
      <x>457</x>
      <y>760</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveVideo_start</sender>
+   <signal>clicked()</signal>
+   <receiver>NamaDemo_YXLClass</receiver>
+   <slot>ButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>116</x>
+     <y>408</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>96</x>
+     <y>764</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveVideo_stop</sender>
+   <signal>clicked()</signal>
+   <receiver>NamaDemo_YXLClass</receiver>
+   <slot>ButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>226</x>
+     <y>409</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>208</x>
+     <y>916</y>
     </hint>
    </hints>
   </connection>

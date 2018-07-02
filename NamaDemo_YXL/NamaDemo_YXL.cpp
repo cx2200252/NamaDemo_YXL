@@ -708,26 +708,25 @@ cv::Mat NamaDemo_YXL::GetNextFrame()
 	if (src.empty())
 		return cv::Mat();
 
-	cv::Mat nama_out;
 	if (_nama)
 	{
 		if (_param_update_every_frame_func)
 			(this->*_param_update_every_frame_func)();
-		nama_out = _nama->Process(src);
+		_nama_out_img = _nama->Process(src);
 	}
 	else
 		return src;
 
 	cv::Mat src2 = _nama->ToNamaIn(src);
 
-	cv::Mat show_img = GetShowImage(src2, nama_out);
+	cv::Mat show_img = GetShowImage(src2, _nama_out_img);
 
 	if ("" != _save_img_path_format)
 	{
 		int cnt_to_save = ui.spinBox_savePic_cnt->value();
 		if (cnt_to_save > 0)
 		{
-			cv::Mat save_img = GetSaveImage(src2, nama_out);
+			cv::Mat save_img = GetSaveImage(src2, _nama_out_img);
 			if (save_img.empty() == false)
 			{
 				cv::imwrite(cv::format(_save_img_path_format.c_str(), _save_img_cur_idx), save_img);
@@ -741,8 +740,15 @@ cv::Mat NamaDemo_YXL::GetNextFrame()
 			ui.pushButton_savePic_stop->click();
 		}
 	}
+	if (_video_writer)
+	{
+		cv::Mat tmp;
+		cv::cvtColor((ui.checkBox_saveWithSrcImg->isChecked()?show_img: _nama_out_img), tmp, CV_RGBA2BGRA);
+		(*_video_writer) << tmp;
+	}
 
 	//saving post-process
+	_cur_show_img = show_img;
 
 	return show_img;
 }
@@ -764,7 +770,8 @@ cv::Mat NamaDemo_YXL::GetSourceImage()
 			{
 				_cap_video->open(_path_video);
 				*_cap_video >> img;
-				
+				if (_video_writer)
+					StopRecording();
 			}
 		}
 		break;
@@ -1183,6 +1190,42 @@ void NamaDemo_YXL::UseSourceVideo(CStr & path)
 	}
 }
 
+void NamaDemo_YXL::StartRecording()
+{
+	auto str = YXL::File::BrowseFile("Video (*.avi)\0*.avi\0\0", false);
+	if (str == "")
+		return;
+	if (".avi" != str.substr(str.length()-4, 4))
+		str += ".avi";
+	_video_writer = std::shared_ptr<cv::VideoWriter>(new  cv::VideoWriter);
+	double fps = _cap_video ? _cap_video->get(CV_CAP_PROP_FPS) : 20.;
+
+	_video_writer->open(str, CV_FOURCC('M', 'J', 'P', 'G'), fps, (ui.checkBox_saveWithSrcImg->isChecked() ? _cur_show_img : _nama_out_img).size());
+	if (_video_writer->isOpened() == false)
+	{
+		_video_writer = nullptr;
+		return;
+	}
+
+	if (_cap_video && YXL::File::FileExist(_path_video))
+		_cap_video->open(_path_video);
+
+	SetRecordingState(true);
+}
+
+void NamaDemo_YXL::StopRecording()
+{
+	if (_video_writer)
+		_video_writer = nullptr;
+	SetRecordingState(false);
+}
+
+void NamaDemo_YXL::SetRecordingState(bool is_recording)
+{
+	ui.pushButton_saveVideo_start->setEnabled(!is_recording);
+	ui.pushButton_saveVideo_stop->setEnabled(is_recording);
+}
+
 //page 3
 #include <funama.h>
 void NamaDemo_YXL::SetAllParameter()
@@ -1416,18 +1459,21 @@ void NamaDemo_YXL::ButtonClicked(QObject * obj)
 	{
 		_source_type = SOURCE_TYPE_CAM;
 		g_config->Set("source", "camera", true);
+		StopRecording();
 	}
 	else if (obj == ui.radioButton_sourcePic)
 	{
 		_source_type = SOURCE_TYPE_PIC;
 		g_config->Set("source", "picture", true);
 		_cap_cam = nullptr;
+		StopRecording();
 	}
 	else if (obj == ui.radioButton_sourceVideo)
 	{
 		_source_type = SOURCE_TYPE_VIDEO;
 		g_config->Set("source", "video", true);
 		_cap_cam = nullptr;
+		StopRecording();
 	}
 	else if (obj == ui.pushButton_selPic)
 	{
@@ -1438,6 +1484,10 @@ void NamaDemo_YXL::ButtonClicked(QObject * obj)
 	{
 		auto str = YXL::File::BrowseFile("Video (*.avi;*.mp4;*MOV)\0*.avi;*.mp4;*MOV\0All (*.*)\0*.*\0\0");
 		UseSourceVideo(str);
+	}
+	else if (obj == ui.checkBox_saveWithSrcImg)
+	{
+		StopRecording();
 	}
 	else if (obj == ui.pushButton_saveDir)
 	{
@@ -1457,6 +1507,14 @@ void NamaDemo_YXL::ButtonClicked(QObject * obj)
 		_save_img_path_format = "";
 		ui.pushButton_savePic_start->setEnabled(true);
 		ui.pushButton_savePic_stop->setEnabled(false);
+	}
+	else if (obj == ui.pushButton_saveVideo_start)
+	{
+		StartRecording();
+	}
+	else if (obj == ui.pushButton_saveVideo_stop)
+	{
+		StopRecording();
 	}
 	else if (obj == ui.radioButton_update_every_frame_none)
 	{
