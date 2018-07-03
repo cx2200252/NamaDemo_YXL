@@ -9,6 +9,7 @@
 #include "YXL/YXLJsonReader.h"
 #include <qmenu.h>
 #include <qspinbox.h>
+#include <QDesktopWidget>
 
 #pragma comment( lib, CV_LIB("videoio"))
 
@@ -693,6 +694,11 @@ NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 
 	InitCtrls();
 	LoadProps();
+
+	//获取可用桌面大小
+	QRect deskRect = QApplication::desktop()->availableGeometry();
+
+	move(QPoint((deskRect.width() - width()) / 2, (deskRect.height() - height()) / 2));
 }
 
 NamaDemo_YXL::~NamaDemo_YXL()
