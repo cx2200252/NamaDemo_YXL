@@ -12,7 +12,7 @@
                 "type": "combobox",
                 "show_name": "filter",
                 "param": "filter_name",
-                "val": "origin",
+                "val": "nature",
                 "combo_texts": [
                     "nature",
                     "delta",
@@ -58,7 +58,7 @@
                 "type": "slider",
                 "show_name": "filter",
                 "param": "filter_level",
-                "val": 100,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -69,7 +69,7 @@
                 "type": "slider",
                 "show_name": "美白",
                 "param": "color_level",
-                "val": 19,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -80,7 +80,7 @@
                 "type": "slider",
                 "show_name": "红润",
                 "param": "red_level",
-                "val": 50,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -91,7 +91,7 @@
                 "type": "slider",
                 "show_name": "磨皮",
                 "param": "blur_level",
-                "val": 6,
+                "val": 0,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -114,7 +114,7 @@
                 "type": "slider",
                 "show_name": "blur_radius",
                 "param": "blur_radius",
-                "val": 100,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -131,7 +131,7 @@
                 "type": "slider",
                 "show_name": "nonskin_blur_scale",
                 "param": "nonskin_blur_scale",
-                "val": 44,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -142,7 +142,7 @@
                 "type": "slider",
                 "show_name": "blur_blend_ratio",
                 "param": "blur_blend_ratio",
-                "val": 100,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -160,7 +160,7 @@
                 "show_name": "脸型",
                 "tooltip": "0:女神，1：网红，2：自然，3：默认",
                 "param": "face_shape",
-                "val": 3,
+                "val": 0,
                 "scale": 1.0,
                 "range": [
                     0,
@@ -171,7 +171,7 @@
                 "type": "slider",
                 "show_name": "变形程度",
                 "param": "face_shape_level",
-                "val": 100,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -182,7 +182,7 @@
                 "type": "slider",
                 "show_name": "大眼",
                 "param": "eye_enlarging",
-                "val": 50,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -193,7 +193,7 @@
                 "type": "slider",
                 "show_name": "瘦脸",
                 "param": "cheek_thinning",
-                "val": 50,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -215,7 +215,7 @@
                 "type": "slider",
                 "show_name": "intensity_forehead",
                 "param": "intensity_forehead",
-                "val": 50,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -226,7 +226,7 @@
                 "type": "slider",
                 "show_name": "intensity_mouth",
                 "param": "intensity_mouth",
-                "val": 50,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,
@@ -237,7 +237,7 @@
                 "type": "slider",
                 "show_name": "intensity_chin",
                 "param": "intensity_chin",
-                "val": 50,
+                "val": 0,
                 "scale": 0.009999999776482582,
                 "range": [
                     0,

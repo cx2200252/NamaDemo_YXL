@@ -1,6 +1,14 @@
 # description
 A demo of Nama ([a SDK about face](http://www.faceunity.com)).
 
+# paths
+- controls: resources/ctrl_config.json
+- prop: resources/props/
+- Nama:   
+  - thirdparty/Nama/authpack.h
+  - thirdparty/Nama/Win64/Release/*.dll *.lib
+  - thirdparty/Nama/Win64/Debug/*.dll *.lib
+
 # features
 - multiple input sources: camera, image, video etc.
 - input source's aspect: vertical vs. horizontal

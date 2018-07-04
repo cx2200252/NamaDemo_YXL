@@ -46,9 +46,10 @@
 //}
 
 
-FU::Nama::Nama(CStr& resDir)
+FU::Nama::Nama(CStr& resDir, CStr& propDir)
 	:_frameID(0),
-	_resDir(resDir)
+	_resDir(resDir),
+	_propDir(propDir)
 {
 	
 }
@@ -284,8 +285,8 @@ int FU::Nama::CreateProp(const std::string & path)
 {
 	std::string data;
 
-	CV_Assert(true == YXL::File::LoadFileContentBinary(_resDir+path, data));
-	std::cout << "load bundle: "<< _resDir+path << std::endl;
+	CV_Assert(true == YXL::File::LoadFileContentBinary(_propDir+path, data));
+	std::cout << "load bundle: "<< _propDir +path << std::endl;
 
 	int handle = fuCreateItemFromPackage(&data[0], data.size());
 	return handle;

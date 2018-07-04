@@ -25,6 +25,7 @@ std::string g_resDir = "../../resources/";
 std::string g_resDir = "../resources/";
 #endif
 
+CStr g_propDir = g_resDir+"props/";
 CStr g_saveDir = "./saved/";
 const cv::Size g_video_size(1280, 720);
 
@@ -928,7 +929,7 @@ void NamaDemo_YXL::InitCtrls()
 
 void NamaDemo_YXL::InitNama()
 {
-	_nama = std::shared_ptr<FU::Nama>(new FU::Nama(g_resDir));
+	_nama = std::shared_ptr<FU::Nama>(new FU::Nama(g_resDir, g_propDir));
 	_nama->Init(g_resDir + "v3.bundle");
 	_nama->InitArdataExt(g_resDir + "ardata_ex.bundle");
 
@@ -1027,53 +1028,56 @@ void NamaDemo_YXL::InitFromConfig()
 
 void NamaDemo_YXL::LoadProps()
 {
-	CStr propDir = g_resDir;
-	vecS dirs;
-	YXL::File::GetSubFolders(propDir, dirs);
-	for (auto& dir : dirs)
-		dir = propDir + dir;
-
-	std::sort(dirs.begin(), dirs.end(), [](const std::string& a, const std::string& b) {
-		auto aa = YXL::File::GetFileInfo(a, YXL::File::FileInfo_LastWriteTime);
-		auto bb = YXL::File::GetFileInfo(b, YXL::File::FileInfo_LastWriteTime);
+	vecS prop_paths, tmp;
+	for (auto postfix : g_prop_postfixs)
+	{
+		YXL::File::GetNames(g_propDir, postfix, tmp);
+		prop_paths.insert(prop_paths.end(), tmp.begin(), tmp.end());
+	}
+	if (prop_paths.empty())
+		return;
+	
+	std::sort(prop_paths.begin(), prop_paths.end(), [](const std::string& a, const std::string& b) {
+		auto aa = YXL::File::GetFileInfo(g_propDir + a, YXL::File::FileInfo_LastWriteTime);
+		auto bb = YXL::File::GetFileInfo(g_propDir + b, YXL::File::FileInfo_LastWriteTime);
 		if (aa.first != bb.first)
 			return aa.first > bb.first;
 		else
 			return aa.second > bb.second;
 	});
 
-	for (auto dir : dirs)
+	std::map<std::string, QTreeWidgetItem*> parent_items;
+	for (auto& path : prop_paths)
 	{
-		dir = YXL::File::GetNameNE(dir);
-		vecS names, tmp;
-		for (auto postfix : g_prop_postfixs)
+		auto tmp = YXL::File::GetFolder(path);
+		if (parent_items.find(tmp) == parent_items.end())
 		{
-			YXL::File::GetNames(propDir + dir + "/" + postfix, tmp);
-			for (auto a : tmp)
-				names.push_back(propDir + dir + "/" + a);
-		}
-		if (names.empty())
-			continue;
+			vecS splits;
+			YXL::Str::Spilt(splits, tmp, "\\/");
+			std::string str="", str2;
+			for (auto s : splits)
+			{
+				str2 = str + s + "/";
+				if (parent_items.find(str2) == parent_items.end())
+				{
+					if(str=="")
+						parent_items[str2] = new QTreeWidgetItem(ui.treeWidget_props);
+					else
+						parent_items[str2] = new QTreeWidgetItem(parent_items[str]);
+					parent_items[str2]->setText(0, StdStr2QStr(s));
+				}
+				str = str2;
+			}
 
-		auto* parent_item = new QTreeWidgetItem(ui.treeWidget_props);
-		parent_item->setText(0, StdStr2QStr(dir));
-		//parent_item->setData(1, Qt::ItemDataRole::UserRole, QVariant(0));
-		//parent_item->setText(0, _train_results[i].show_title);
-		
-		std::sort(names.begin(), names.end(), [](const std::string& a, const std::string& b) {
-			auto aa = YXL::File::GetFileInfo(a, YXL::File::FileInfo_LastWriteTime);
-			auto bb = YXL::File::GetFileInfo(b, YXL::File::FileInfo_LastWriteTime);
-			if (aa.first != bb.first)
-				return aa.first > bb.first;
-			else
-				return aa.second > bb.second;
-		});
-
-		for (auto name : names)
-		{
-			auto* item = new QTreeWidgetItem(parent_item);
-			item->setText(0, StdStr2QStr(YXL::File::GetName(name)));
+			//do something
 		}
+
+		QTreeWidgetItem* item;
+		if(""==tmp)
+			item = new QTreeWidgetItem(ui.treeWidget_props);
+		else
+			item = new QTreeWidgetItem(parent_items[tmp]);
+		item->setText(0, StdStr2QStr(YXL::File::GetName(path)));
 	}
 }
 
@@ -1089,7 +1093,7 @@ bool NamaDemo_YXL::IsValidPropPath(CStr & path)
 			break;
 		}
 	}
-	return is_postfix_ok && YXL::File::FileExist(g_resDir +path);
+	return is_postfix_ok && YXL::File::FileExist(g_propDir +path);
 }
 
 void NamaDemo_YXL::ClearPropUsed()

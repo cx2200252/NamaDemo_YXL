@@ -8,7 +8,7 @@ namespace FU
 	class Nama
 	{
 	public:
-		Nama(CStr& resDir);
+		Nama(CStr& resDir, CStr& propDir);
 		void Init(std::string v3Path);
 
 		void InitArdataExt(std::string path);
@@ -49,6 +49,7 @@ namespace FU
 		int _frameID;
 
 		std::string _resDir;
+		std::string _propDir;
 
 	private:
 		vecS _props_used;
