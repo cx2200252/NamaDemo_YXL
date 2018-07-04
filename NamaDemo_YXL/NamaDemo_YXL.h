@@ -33,8 +33,7 @@ public:
 	static bool IsType(const rapidjson::Value & val)
 	{
 		return val.IsObject() && JsonValHasMemberAndIsStr(val, "type")
-			&& JsonValHasMemberAndIsStr(val, "param")
-			&& JsonValHasMemberAndIsInt(val, "prop_idx");
+			&& JsonValHasMemberAndIsStr(val, "param");
 	}
 	virtual void LoadFromJson(const rapidjson::Value & val)
 	{
@@ -42,7 +41,6 @@ public:
 		if (val.HasMember("tooltip") && val["tooltip"].IsString())
 			_tooltip = JsonGetStr(val["tooltip"]);
 		_param = JsonGetStr(val["param"]);
-		_prop_idx = JsonGetInt(val["prop_idx"]);
 	}
 	virtual void SaveToJson(rapidjson::Value & val, rapidjson::Document& doc)
 	{
@@ -51,7 +49,6 @@ public:
 		if(_tooltip!="")
 			val.AddMember(JsonParseStr("tooltip", doc), JsonParseStr(_tooltip, doc), alloc);
 		val.AddMember(JsonParseStr("param", doc), JsonParseStr(_param, doc), alloc);
-		val.AddMember(JsonParseStr("prop_idx", doc), _prop_idx, alloc);
 	}
 
 	virtual void InitCtrl(NamaDemo_YXL* wnd);
@@ -60,25 +57,10 @@ public:
 		return _layout;
 	}
 
-	void SetSpinBoxRange(int min, int max)
-	{
-		if(_spin_box)
-			_spin_box->setRange(min, max);
-	}
-	virtual void UpdateCtrlValue()
-	{
-		if (_spin_box)
-			_spin_box->setValue(_prop_idx);
-	}
-	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed) = 0;
-	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender) = 0;
-	virtual bool SpinBoxChanged(QSpinBox* spinbox)
-	{
-		if (spinbox != _spin_box)
-			return false;
-		_prop_idx = _spin_box->value();
-		return true;
-	}
+	virtual void UpdateCtrlValue() = 0;
+
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::string& prop) = 0;
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::string& prop, QObject* sender) = 0;
 
 protected:
 	void SetCtrlData(QAbstractSlider * slider, int value)
@@ -118,18 +100,80 @@ protected:
 	std::string _show_name="";
 	std::string _tooltip="";
 	std::string _param="";
-	int _prop_idx = -1;
 
 protected:
 	QHBoxLayout* _layout = nullptr;
-	QSpinBox* _spin_box = nullptr;
-	QVBoxLayout* _v_layout = nullptr;
 };
 
-struct ParamList
+class ParamList
 {
-	std::vector<std::shared_ptr<ParamItemBase> > params;
-	QScrollArea* container=nullptr;
+public:
+	void InitCtrl(NamaDemo_YXL* wnd, QVBoxLayout* parent_layout, const int min_width);
+	void SetVisible(bool is_visible)
+	{
+		_container->setVisible(is_visible);
+	}
+
+	void AddParamItem(std::shared_ptr<ParamItemBase> item)
+	{
+		_params.push_back(item);
+	}
+	std::vector<std::shared_ptr<ParamItemBase> > GetParams()
+	{
+		return _params;
+	}
+
+	int GetPropIdx()
+	{
+		return _prop_idx;
+	}
+	void SetPropIdx(int prop_idx)
+	{
+		_prop_idx = prop_idx;
+	}
+	void SetSpinBoxRange(int min, int max)
+	{
+		if (_spin_box)
+			_spin_box->setRange(min, max);
+	}
+	virtual bool SpinBoxChanged(QSpinBox* spinbox)
+	{
+		if (spinbox != _spin_box)
+			return false;
+		_prop_idx = _spin_box->value();
+		return true;
+	}
+	virtual void UpdateCtrlValue()
+	{
+		if (_spin_box)
+			_spin_box->setValue(_prop_idx);
+		for (auto param : _params)
+			param->UpdateCtrlValue();
+	}
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::vector<std::string>& props)
+	{
+		if (0 > _prop_idx || _prop_idx >= props.size())
+			return;
+		for (auto param : _params)
+			param->SetCtrlValue(nama, props[_prop_idx]);
+	}
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::vector<std::string>& props, QObject* sender)
+	{
+		if (0 > _prop_idx || _prop_idx >= props.size())
+			return false;
+		for (auto param : _params)
+			if (param->SetPropValue(nama, props[_prop_idx], sender))
+				return true;
+		return false;
+	}
+
+private:
+	std::vector<std::shared_ptr<ParamItemBase> > _params;
+	QSpinBox* _spin_box = nullptr;
+	int _prop_idx = 0;
+	QScrollArea* _container = nullptr;
+	QHBoxLayout* _spin_box_layout = nullptr;
+	std::shared_ptr<ParamItemBase> _h_line = nullptr;
 };
 
 enum SOURCE_TYPE
