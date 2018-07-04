@@ -184,7 +184,7 @@ private:
 	void UseSourcePicture(CStr& path);
 	void UseSourceVideo(CStr& path);
 
-	void StartRecording();
+	void StartRecording(CStr& save_path);
 	void StopRecording();
 	void SetRecordingState(bool is_recording);
 

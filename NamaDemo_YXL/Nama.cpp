@@ -171,7 +171,7 @@ cv::Mat FU::Nama::Process(cv::Mat img)
 			reinterpret_cast<int*>(out.data),
 			_bgra_in ? FU_FORMAT_BGRA_BUFFER : FU_FORMAT_RGBA_BUFFER,
 			reinterpret_cast<int*>(in.data),
-			in.cols, in.rows, _frameID, &props[0], props.size(), NAMA_RENDER_FEATURE_FULL, 0);
+			in.cols, in.rows, _frameID, &props[0], props.size(), NAMA_RENDER_FEATURE_FULL | NAMA_RENDER_OPTION_FLIP_X, 0);
 		++_frameID;
 	}
 	else 
@@ -181,7 +181,7 @@ cv::Mat FU::Nama::Process(cv::Mat img)
 			reinterpret_cast<int*>(out.data),
 			_bgra_in ? FU_FORMAT_BGRA_BUFFER : FU_FORMAT_RGBA_BUFFER,
 			reinterpret_cast<int*>(in.data),
-			in.cols, in.rows, _frameID, nullptr, 0, NAMA_RENDER_FEATURE_FULL, 0);
+			in.cols, in.rows, _frameID, nullptr, 0, NAMA_RENDER_FEATURE_FULL | NAMA_RENDER_OPTION_FLIP_X, 0);
 		++_frameID;
 	}
 	//cv::imshow("in", in);
