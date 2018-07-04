@@ -1,7 +1,7 @@
 # description
 A demo of Nama ([a SDK about face](http://www.faceunity.com)).
 
-# functions
+# features
 - multiple input sources: camera, image, video etc.
 - input source's aspect: vertical vs. horizontal
 - adding controls according to a json file (resources/ctrl_config.json). The controls is used to set parameters of Nama's props
@@ -20,7 +20,6 @@ A demo of Nama ([a SDK about face](http://www.faceunity.com)).
 - Qt 5.*
 - OpenCV
 - [Nama SDK](https://github.com/Faceunity)
-- some of my code: [YXL](https://github.com/cx2200252/YXL_code/tree/master/YXL)  
 
 # ctrl_config.json
 
@@ -53,7 +52,6 @@ All controls' setting are in node "params". Each sub-node within "params" is a p
 	"show_name": "is_beauty_on",
 	"tooltip": "is_beauty_on",
 	"param": "is_beauty_on",
-	"prop_idx": 0,
 	"val": false
 }
 ```
@@ -64,7 +62,6 @@ All controls' setting are in node "params". Each sub-node within "params" is a p
 	"show_name": "美白",
 	"tooltip": "",
 	"param": "color_level",
-	"prop_idx": 0,
 	"val": 0,
 	"scale": 0.01,
 	"range": [0, 100]
@@ -77,7 +74,6 @@ All controls' setting are in node "params". Each sub-node within "params" is a p
 	"show_name": "filter",
 	"tooltip": "",
 	"param": "filter_name",
-	"prop_idx": 0,
 	"val": "nature",
 	"combo_texts": ["nature", "delta", "electric", "slowlived"]
 }
@@ -89,7 +85,6 @@ All controls' setting are in node "params". Each sub-node within "params" is a p
 	"show_name": "rotate",
 	"tooltip": "",
 	"param": "rotate",
-	"prop_idx": 0,
 	"vals": [0,0,0,0],
 	"min": [0,0,0,0],
 	"max": [100,100,100,100],
