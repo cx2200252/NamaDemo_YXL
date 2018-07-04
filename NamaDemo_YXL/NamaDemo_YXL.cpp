@@ -9,6 +9,7 @@
 #include "YXL/YXLJsonReader.h"
 #include <qmenu.h>
 #include <qspinbox.h>
+#include <QDesktopWidget>
 
 #pragma comment( lib, CV_LIB("videoio"))
 
@@ -40,18 +41,18 @@ std::string QStr2StdStr(QString str)
 void ParamItemBase::InitCtrl(NamaDemo_YXL * wnd)
 {
 	_layout = new QHBoxLayout();
-	_v_layout = new QVBoxLayout();
+	//_v_layout = new QVBoxLayout();
 
-	_spin_box = new QSpinBox();
-	_spin_box->setToolTip(QString::fromLocal8Bit("目标道具"));
-	_spin_box->setSingleStep(1);
-	_spin_box->setRange(0, 0);
-	_spin_box->setValue(0);
-	_spin_box->setMaximumWidth(50);
-	_v_layout->addWidget(_spin_box);
-	_v_layout->addStretch();
-	_layout->addLayout(_v_layout);
-	QObject::connect(_spin_box, SIGNAL(valueChanged(int)), wnd, SLOT(SpinBoxChanged(int)));
+	///*_spin_box = new QSpinBox();
+	//_spin_box->setToolTip(QString::fromLocal8Bit("目标道具"));
+	//_spin_box->setSingleStep(1);
+	//_spin_box->setRange(0, 0);
+	//_spin_box->setValue(0);
+	//_spin_box->setMaximumWidth(50);*/
+	////_v_layout->addWidget(_spin_box);
+	//_v_layout->addStretch();
+	//_layout->addLayout(_v_layout);
+	////QObject::connect(_spin_box, SIGNAL(valueChanged(int)), wnd, SLOT(SpinBoxChanged(int)));
 }
 
 struct ParamItemCheckbox :public ParamItemBase
@@ -92,23 +93,19 @@ public:
 
 	virtual void UpdateCtrlValue()
 	{
-		ParamItemBase::UpdateCtrlValue();
 		SetCtrlData(_check_box, _val);
 	}
-	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::string& prop)
 	{
-		double val = 0.0;
-		if (propsUsed.size()>_prop_idx)
-			val = nama->GetPropParameterD(propsUsed[_prop_idx], _param);
-		_val = val >0.0;
+		_val = nama->GetPropParameterD(prop, _param)>0.0;
 	}
-	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::string& prop, QObject* sender)
 	{
 		if (sender != _check_box)
 			return false;
 		_val = _check_box->isChecked();
-		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
-			nama->SetPropParameter(propsUsed[_prop_idx], _param, _val ? 1.0 : 0.0);
+		if (nama)
+			nama->SetPropParameter(prop, _param, _val ? 1.0 : 0.0);
 		return true;
 	}
 
@@ -180,25 +177,21 @@ public:
 	}
 	virtual void UpdateCtrlValue()
 	{
-		ParamItemBase::UpdateCtrlValue();
 		SetCtrlData(_slider, _val);
 	}
-	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::string& prop)
 	{
-		double val = 0.0;
-		if (propsUsed.size()>_prop_idx)
-			val = nama->GetPropParameterD(propsUsed[_prop_idx], _param);
-		_val = val / _scale;
+		_val = nama->GetPropParameterD(prop, _param) / _scale;
 	}
-	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::string& prop, QObject* sender)
 	{
 		if (sender != _slider)
 			return false;
 		_val = _slider->value();
 		auto tmp = _val*_scale;
 		_label->setText(QString::number(tmp));
-		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
-			nama->SetPropParameter(propsUsed[_prop_idx], _param, tmp);
+		if (nama)
+			nama->SetPropParameter(prop, _param, tmp);
 		return true;
 	}
 
@@ -264,25 +257,22 @@ public:
 
 	virtual void UpdateCtrlValue()
 	{
-		ParamItemBase::UpdateCtrlValue();
 		SetCtrlData(_combobox, _val);
 	}
 
-	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::string& prop)
 	{
-		std::string str = "";
-		if (propsUsed.size()>_prop_idx)
-			str = nama->GetPropParameterStr(propsUsed[_prop_idx], _param);
+		std::string str = nama->GetPropParameterStr(prop, _param);
 		if ("" != str)
 			_val = str;
 	}
-	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::string& prop, QObject* sender)
 	{
 		if (sender != _combobox)
 			return false;
 		_val = QStr2StdStr(_combobox->currentText());
-		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
-			nama->SetPropParameter(propsUsed[_prop_idx], _param, _val);
+		if (nama)
+			nama->SetPropParameter(prop, _param, _val);
 		return true;
 	}
 protected:
@@ -375,7 +365,6 @@ public:
 	virtual void UpdateCtrlValue()
 	{
 		_is_updating = true;
-		ParamItemBase::UpdateCtrlValue();
 		for (int i(0); i != _vals.size(); ++i)
 		{
 			if (i + 1 == _vals.size())
@@ -384,19 +373,17 @@ public:
 		}
 	}
 
-	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::string& prop)
 	{
 		if (_is_updating)
 			return;
 		std::vector<double> tmp(_vals.size());
-		bool ret=false;
-		if (propsUsed.size() > _prop_idx)
-			ret=nama->GetPropParameterDv(propsUsed[_prop_idx], _param, tmp);
+		bool ret=nama->GetPropParameterDv(prop, _param, tmp);
 		if (ret)
 			for (int i(0); i != _vals.size(); ++i)
 				_vals[i] = static_cast<float>(tmp[i]) / _scales[i];
 	}
-	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::string& prop, QObject* sender)
 	{
 		bool is_find(false);
 		for(auto& slider:_sliders)
@@ -418,8 +405,8 @@ public:
 			_labels[i]->setText(QString::number(tmp));
 			nama_vals.push_back(tmp);
 		}
-		if (nama && _prop_idx >= 0 && _prop_idx < propsUsed.size())
-			nama->SetPropParameter(propsUsed[_prop_idx], _param, nama_vals);
+		if (nama)
+			nama->SetPropParameter(prop, _param, nama_vals);
 		return true;
 	}
 
@@ -472,10 +459,10 @@ public:
 	virtual void UpdateCtrlValue()
 	{
 	}
-	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed)
+	virtual void SetCtrlValue(std::shared_ptr<FU::Nama> nama, const std::string& prop)
 	{
 	}
-	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, std::vector<std::string>& propsUsed, QObject* sender)
+	virtual bool SetPropValue(std::shared_ptr<FU::Nama> nama, const std::string& prop, QObject* sender)
 	{
 		return false;
 	}
@@ -484,6 +471,42 @@ protected:
 
 protected:
 };
+
+void ParamList::InitCtrl(NamaDemo_YXL * wnd, QVBoxLayout* parent_layout, const int min_width)
+{
+	QFormLayout* layout = new QFormLayout();
+
+	_spin_box_layout = new QHBoxLayout();
+	_spin_box = new QSpinBox();
+	_spin_box->setToolTip(QString::fromLocal8Bit("目标道具"));
+	_spin_box->setSingleStep(1);
+	_spin_box->setRange(0, 0);
+	_spin_box->setValue(0);
+	_spin_box->setMaximumWidth(50);
+	_spin_box_layout->addWidget(new QLabel("prop index: "));
+	_spin_box_layout->addWidget(_spin_box);
+	_spin_box_layout->addStretch();
+	QObject::connect(_spin_box, SIGNAL(valueChanged(int)), wnd, SLOT(SpinBoxChanged(int)));
+	layout->addRow(StdStr2QStr(""),_spin_box_layout);
+
+	_h_line = std::shared_ptr<ParamItemBase>(new ParamItemHLine);
+	_h_line->InitCtrl(wnd);
+	layout->addRow(StdStr2QStr(""), _h_line->GetLayout());
+
+	for (auto& item : _params)
+	{
+		item->InitCtrl(wnd);
+		layout->addRow(StdStr2QStr(""), item->GetLayout());
+	}
+
+	QWidget* qw = new QWidget(_container);
+	qw->setLayout(layout);
+	_container = new QScrollArea();
+	_container->setWidget(qw);
+
+	qw->setMinimumWidth(min_width);
+	parent_layout->addWidget(_container);
+}
 
 
 namespace YXL
@@ -608,27 +631,42 @@ public:
 		if (root.HasMember("params") && root["params"].IsObject())
 			for (auto iter = root["params"].MemberBegin(); iter != root["params"].MemberEnd(); ++iter)
 			{
-				std::string name = iter->name.GetString();
+				std::string name = JsonGetStr(iter->name);
 				if (iter->value.IsArray())
 				{
 					std::vector<std::shared_ptr<ParamItemBase> > params;
 					_json_ctrl->ReadValue(params, name, root["params"]);
 					for (auto& item : params)
 						if (item)
-							param_lists[name].params.push_back(item);
+							param_lists[name].AddParamItem(item);
 				}
 		
+			}
+		if (root.HasMember("prop_idx") && root["prop_idx"].IsObject())
+			for (auto iter = root["prop_idx"].MemberBegin(); iter != root["prop_idx"].MemberEnd(); ++iter)
+			{
+				std::string name = JsonGetStr(iter->name);
+				if (param_lists.find(name) != param_lists.end())
+					param_lists[name].SetPropIdx(JsonValIsInt(iter->value) ? JsonGetInt(iter->value) : 0);
 			}
 	}
 	void SaveParamList(std::map<std::string, ParamList >& param_lists, bool is_save = false)
 	{
 		auto& doc = _json_ctrl->GetDoc();
-		rapidjson::Value v(rapidjson::Type::kObjectType);
-		for (auto& pair : param_lists)
+		//prop_idx
 		{
-			_json_ctrl->AddMember(pair.first, pair.second.params, v);
+			rapidjson::Value v(rapidjson::Type::kObjectType);
+			for (auto& pair : param_lists)
+				_json_ctrl->AddMember(pair.first, pair.second.GetPropIdx(), v);
+			_json_ctrl->SetMember(std::string("prop_idx"), v);
 		}
-		_json_ctrl->SetMember(std::string("params"), v);
+		//params
+		{
+			rapidjson::Value v(rapidjson::Type::kObjectType);
+			for (auto& pair : param_lists)
+				_json_ctrl->AddMember(pair.first, pair.second.GetParams(), v);
+			_json_ctrl->SetMember(std::string("params"), v);
+		}
 		if (is_save)
 			Save();
 	}
@@ -693,6 +731,10 @@ NamaDemo_YXL::NamaDemo_YXL(QWidget *parent)
 
 	InitCtrls();
 	LoadProps();
+
+	//获取可用桌面大小
+	QRect deskRect = QApplication::desktop()->availableGeometry();
+	move(QPoint((deskRect.width() - width()) / 2, (deskRect.height() - height()) / 2));
 }
 
 NamaDemo_YXL::~NamaDemo_YXL()
@@ -871,27 +913,9 @@ void NamaDemo_YXL::InitCtrls()
 	{
 		for (auto& param : _param_lists)
 		{
-			QFormLayout* layout = new QFormLayout();
-			bool is_show = (param.first == _cur_param_list);
-			for (auto& item : param.second.params)
-			{
-				item->InitCtrl(this);
-				layout->addRow(StdStr2QStr(""), item->GetLayout());
-			}
-
-			param.second.container = new QScrollArea();
-
-			QWidget* qw = new QWidget(param.second.container);
-			qw->setLayout(layout);
-			param.second.container->setWidget(qw);
-
-			qw->setMinimumWidth(ui.toolBox->width() - 50);
-
-			ui.verticalLayout_2->addWidget(param.second.container);
-			param.second.container->setVisible(is_show);
+			param.second.InitCtrl(this, ui.verticalLayout_2, ui.toolBox->width() - 50);
+			param.second.SetVisible(param.first == _cur_param_list);
 		}
-
-		
 	}
 }
 
@@ -1106,8 +1130,7 @@ void NamaDemo_YXL::UpdateSpinBoxRange()
 {
 	int tmp = _propsUsed.empty() ? 0 : _propsUsed.size() - 1;
 	for (auto& params : _param_lists)
-		for (auto& item : params.second.params)
-			item->SetSpinBoxRange(0, tmp);
+		params.second.SetSpinBoxRange(0, tmp);
 }
 
 void NamaDemo_YXL::UpdatePropsUsed()
@@ -1147,8 +1170,7 @@ void NamaDemo_YXL::UpdateCtrlValue()
 	}
 
 	auto& param = _param_lists[_cur_param_list];
-	for (auto& item : param.params)
-		item->UpdateCtrlValue();
+	param.UpdateCtrlValue();
 }
 
 void NamaDemo_YXL::UseSourcePicture(CStr & path)
@@ -1235,8 +1257,7 @@ void NamaDemo_YXL::UpdateParamsFromProp()
 		return;
 
 	auto& param = _param_lists[_cur_param_list];
-	for (auto& item : param.params)
-		item->SetCtrlValue(_nama, _propsUsed);
+	param.SetCtrlValue(_nama, _propsUsed);
 	UpdateCtrlValue();
 	SaveParams();
 }
@@ -1245,13 +1266,12 @@ void NamaDemo_YXL::CheckBoxClick()
 {
 	auto obj = sender();
 	for(auto& param:_param_lists)
-		for (auto& item : param.second.params)
-			if (item->SetPropValue(_nama, _propsUsed, obj))
-			{
-				if (false == _is_param_batch_update)
-					SaveParams();
-				return;
-			}
+		if (param.second.SetPropValue(_nama, _propsUsed, obj))
+		{
+			if (false == _is_param_batch_update)
+				SaveParams();
+			return;
+		}
 }
 
 void NamaDemo_YXL::SliderChanged(int val)
@@ -1259,26 +1279,24 @@ void NamaDemo_YXL::SliderChanged(int val)
 	auto obj = sender();
 
 	for (auto& param : _param_lists)
-		for (auto& item : param.second.params)
-			if (item->SetPropValue(_nama, _propsUsed, obj))
-			{
-				if (false == _is_param_batch_update)
-					SaveParams();
-				return;
-			}
+		if (param.second.SetPropValue(_nama, _propsUsed, obj))
+		{
+			if (false == _is_param_batch_update)
+				SaveParams();
+			return;
+		}
 }
 
 void NamaDemo_YXL::SpinBoxChanged(int val)
 {
 	auto obj = this->sender();
 	for (auto& param : _param_lists)
-		for (auto& item : param.second.params)
-			if (item->SpinBoxChanged(reinterpret_cast<QSpinBox*>(obj)))
-			{
-				if (false == _is_param_batch_update)
-					SaveParams();
-				return;
-			}
+		if (param.second.SpinBoxChanged(reinterpret_cast<QSpinBox*>(obj)))
+		{
+			if (false == _is_param_batch_update)
+				SaveParams();
+			return;
+		}
 }
 
 void NamaDemo_YXL::ButtonClicked()
@@ -1337,9 +1355,9 @@ void NamaDemo_YXL::CurrentTextChanged(QString str)
 		auto iter = _param_lists.find(txt);
 		if (iter != _param_lists.end())
 		{
-			_param_lists[_cur_param_list].container->setVisible(false);
+			_param_lists[_cur_param_list].SetVisible(false);
 			_cur_param_list = txt;
-			_param_lists[_cur_param_list].container->setVisible(true);
+			_param_lists[_cur_param_list].SetVisible(true);
 			if (false==_is_param_batch_update)
 				SaveParams();
 			return;
@@ -1347,13 +1365,12 @@ void NamaDemo_YXL::CurrentTextChanged(QString str)
 	}
 
 	for (auto& param : _param_lists)
-		for (auto& item : param.second.params)
-			if (item->SetPropValue(_nama, _propsUsed, obj))
-			{
-				if (false == _is_param_batch_update)
-					SaveParams();
-				return;
-			}
+		if (param.second.SetPropValue(_nama, _propsUsed, obj))
+		{
+			if (false == _is_param_batch_update)
+				SaveParams();
+			return;
+		}
 }
 
 void NamaDemo_YXL::LoadParams()
